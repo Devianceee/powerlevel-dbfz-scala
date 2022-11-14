@@ -1,2 +1,8 @@
 *.class
 *.log
+/project/target/config-classes/$3c1b186ce3ac1f27d9ad.cache
+/project/project/target/config-classes/$5e19e3a6409595118100.cache
+/project/target/config-classes/$07f04342e487a0b64e21.cache
+/project/target/config-classes/$24bd5ddefe3ae7fbed1c.cache
+/project/target/config-classes/$93bc6e7d3888bb417475.cache
+/null/Coursier/cache/*
