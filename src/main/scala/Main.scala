@@ -10,23 +10,27 @@ import org.http4s.Method.POST
 import org.http4s.client._
 import org.http4s.client.dsl.io._
 import org.http4s.implicits.http4sLiteralsSyntax
-import org.http4s.{EntityDecoder, UrlForm}
-import org.velvia.MsgPack
-import org.velvia.msgpack.RawStringCodecs.StringCodec
-import org.velvia.msgpack._
+import org.http4s.{Request, UrlForm}
+import org.json4s._
+import wvlet.airframe.msgpack.spi.MessagePack
+import org.http4s.Uri
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.xml.bind.DatatypeConverter
 
 object Main extends IOApp.Simple {
-  val httpClient: Client[IO] = JavaNetClientBuilder[IO].create
-  val printTime: Stream[IO, Unit] = Stream.eval(IO(println("Hello world! The time is: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
-  val statement: Stream[IO, Unit] = Stream.eval(IO(if (56 > 0) println(100) else println(0)))
+  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
+  val login_url = "https://dbf.channel.or.jp/api/user/login"
+
+  val timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+  val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + timeNow)))
+  val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login world! The time is: " + timeNow)))
+
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
   val everyMinute = Cron.unsafeParse("1 * * ? * *")
-  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
-  val tasks = cronScheduler.schedule(List(every20Secs -> printTime, every20Secs -> statement))
+  val every30Mins = Cron.unsafeParse("3 * * ? * *")
+
+  val tasks = cronScheduler.schedule(List(everyMinute -> printForReplay, every30Mins -> printForLogin))
 
   def convertBytesToHex(bytes: Array[Byte]): String = {
     val sb = new StringBuilder
@@ -36,23 +40,30 @@ object Main extends IOApp.Simple {
     sb.toString
   }
 
-  //    val loginJson = parse("""["", "", 2,"0.0.3", 3],["76561198077238939", "110000106f8de9b", 256, 0]""")
+  def packJson(json: String): String = {
+    convertBytesToHex(MessagePack.fromJSON(json))
+  }
 
-  val loginRequest = POST(
-    UrlForm(
-      "data" -> "dd00000002dd00000005a0a002a5302e302e3303dd00000004b13736353631313938303737323338393339af313130303030313036663864653962cd010000"
-    ),
-    uri"https://dbf.channel.or.jp/api/user/login"
-  )
+  def unpackResponse(response: Array[Byte]): String = {
+    MessagePack.newUnpacker(response).unpackValue.toJson
+  }
+
+  def loginRequest(): Array[Byte] = {
+    val httpClient: Client[IO] = JavaNetClientBuilder[IO].create
+    val loginJson = """[["", "", 2,"0.0.3", 3],["76561198077238939", "110000106f8de9b", 256, 0]]"""
+    val postRequest = POST (UrlForm("data" -> packJson(loginJson)), uri"https://dbf.channel.or.jp/api/user/login")
+    httpClient.expect[Array[Byte]](postRequest).unsafeRunSync()
+  }
+
+  def replayRequest(json: String): Array[Byte] = {
+    val httpClient: Client[IO] = JavaNetClientBuilder[IO].create
+    val postRequest = POST (UrlForm("data" -> packJson(json)), uri"https://dbf.channel.or.jp/api/catalog/get_replay")
+    httpClient.expect[Array[Byte]](postRequest).unsafeRunSync()
+  }
 
   override def run: IO[Unit] = {
+    println(unpackResponse(loginRequest()))
 
-    val response = httpClient.expect[Array[Byte]](loginRequest).unsafeRunSync()
-    val unpacked = MsgPack.unpack(response).toString
-    println(unpacked)
-
-    val test = pack("test")
-    println(unpack[String](DatatypeConverter.parseHexBinary(convertBytesToHex(test))))
     IO.unit
   }
 }
