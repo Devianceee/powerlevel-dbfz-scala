@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Parsed JSON response and hydrated ReplayResults to be passed onto SQL database and be stored">
-      <change afterPath="$PROJECT_DIR$/src/main/scala/Database.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" afterDir="false" />
+    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Parsed JSON response and hydrated ReplayResults to be passed onto SQL database and be stored&#10;- Increased range of matches being parsed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Requests.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Requests.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Utils.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Utils.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,7 +196,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668783555102</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="- Parsed JSON response and hydrated ReplayResults to be passed onto SQL database and be stored&#10;- Increased range of matches being parsed">
+      <created>1668801580011</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1668801580011</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -237,6 +240,7 @@
     <MESSAGE value="- Fixed replay calls&#10;- Updated CRON jobs" />
     <MESSAGE value="- Updated CRON job timing so that login and replay don't overlap as much, reducing faulty timestamps" />
     <MESSAGE value="- Painfully added enum for each character (all characters are value &quot;-1&quot; which is default parameter)" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Painfully added enum for each character (all characters are value &quot;-1&quot; which is default parameter)" />
+    <MESSAGE value="- Parsed JSON response and hydrated ReplayResults to be passed onto SQL database and be stored&#10;- Increased range of matches being parsed" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Parsed JSON response and hydrated ReplayResults to be passed onto SQL database and be stored&#10;- Increased range of matches being parsed" />
   </component>
 </project>

@@ -9,12 +9,12 @@ import org.http4s.client.dsl.io._
 import org.http4s.client.{Client, JavaNetClientBuilder}
 import org.http4s.implicits.http4sLiteralsSyntax
 import com.typesafe.scalalogging.Logger
+import play.api.libs.json.{JsValue, Json}
 
-case class ReplayResults(MatchID: Long, MatchTime: String,
+case class ReplayResults(uniqueMatchID: Long, matchTime: String,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
-// TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
 
 object Requests {
 
@@ -61,8 +61,9 @@ object Requests {
 
   def getLoginTimeStamp: String = {
     println("Getting Login Timestamp...")
-    val timestamp = loginRequest().substring(3).dropRight(140) // scuffed way to do this but can't be bothered to figure out right now. TODO for later
+    val jsonList: JsValue = Json.parse(loginRequest()).as[List[JsValue]].head(0)
+
     println("Obtained Login Timestamp!")
-    return timestamp
+    return jsonList.toString().replace("\"", "")
   }
 }

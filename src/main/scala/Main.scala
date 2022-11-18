@@ -6,6 +6,7 @@ import com.typesafe.scalalogging.Logger
 import cron4s.Cron
 import eu.timepit.fs2cron.cron4s.Cron4sScheduler
 import fs2.Stream
+import fs2.concurrent.SignallingRef
 import org.http4s.EntityDecoder.byteArrayDecoder
 import org.http4s.Method.POST
 import org.http4s.UrlForm
@@ -19,7 +20,7 @@ object Main extends IOApp.Simple {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
   var loginTimestamp: String = "" // Yes I hate using a var too, I didn't want to do this too
-  val numberOfMatchesQueried = 100
+  val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
 
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
   val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
@@ -43,6 +44,27 @@ object Main extends IOApp.Simple {
     every21Secs -> replayResponseRank(801),
     every21Secs -> replayResponseRank(901),
     every21Secs -> replayResponseRank(1001),
+    every21Secs -> replayResponseRank(1101),
+    every21Secs -> replayResponseRank(1101),
+    every21Secs -> replayResponseRank(1201),
+    every21Secs -> replayResponseRank(1301),
+    every21Secs -> replayResponseRank(1401),
+    every21Secs -> replayResponseRank(1501),
+    every21Secs -> replayResponseRank(1601),
+    every21Secs -> replayResponseRank(1701),
+    every21Secs -> replayResponseRank(1801),
+    every21Secs -> replayResponseRank(1901),
+    every21Secs -> replayResponseRank(2001),
+    every21Secs -> replayResponseRank(2101),
+    every21Secs -> replayResponseRank(2201),
+    every21Secs -> replayResponseRank(2301),
+    every21Secs -> replayResponseRank(2401),
+    every21Secs -> replayResponseRank(2501),
+    every21Secs -> replayResponseRank(2601),
+    every21Secs -> replayResponseRank(2701),
+    every21Secs -> replayResponseRank(2801),
+    every21Secs -> replayResponseRank(2901),
+    every21Secs -> replayResponseRank(3001),
     every15Mins -> printForLogin,
     every15Mins -> loginResponse,
   ))
@@ -52,9 +74,11 @@ object Main extends IOApp.Simple {
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
   override def run: IO[Unit] = {
+    // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
+
     loginTimestamp = Requests.getLoginTimeStamp
     println(loginTimestamp)
-    cronTasks.attempt.compile.drain.unsafeRunSync()
+//    cronTasks.attempt.compile.drain.unsafeRunSync()
     IO.unit
   }
 }
