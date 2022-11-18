@@ -11,10 +11,8 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-circe" % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
-  "org.velvia" %% "msgpack4s" % "0.6.0",
-  "org.json4s" %% "json4s-native" % "3.5.0",
-  "org.json4s" %% "json4s-jackson" % "3.5.0",
-  "org.wvlet.airframe" %% "airframe-msgpack" % "22.11.1"
+  "org.wvlet.airframe" %% "airframe-msgpack" % "22.11.1",
+  "io.spray" %% "spray-json" % "1.3.5",
 )
 
 lazy val root = (project in file("."))
