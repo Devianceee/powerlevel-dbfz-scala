@@ -8,13 +8,11 @@ import org.http4s.UrlForm
 import org.http4s.client.dsl.io._
 import org.http4s.client.{Client, JavaNetClientBuilder}
 import org.http4s.implicits.http4sLiteralsSyntax
-import spray.json.DefaultJsonProtocol.StringJsonFormat
-import spray.json._
 import com.typesafe.scalalogging.Logger
 
 case class ReplayResults(MatchID: Long, MatchTime: String,
-                         winnerID: String, winnerName: String, winnerCharacters: Any,
-                         loserID: String, loserName: String, loserCharacters: Any)
+                         winnerID: Long, winnerName: String, winnerCharacters: List[String],
+                         loserID: Long, loserName: String, loserCharacters: List[String])
 
 // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
 

@@ -1,15 +1,22 @@
 package org.powerlevel
 
 import wvlet.airframe.msgpack.spi.MessagePack
-import spray.json._
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, OffsetDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import play.api.libs.json._
 
 object Utils {
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
+  def jpTimeParse(matchTime: String): String = {
+    val formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss")
+
+    val jpTime = LocalDateTime.parse(matchTime, formatter).atZone(ZoneId.of("Asia/Tokyo"))
+    val currentTime = jpTime.toOffsetDateTime.withOffsetSameInstant(ZonedDateTime.now().getOffset).format(DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss"))
+    currentTime
+  }
 
   def convertBytesToHex(bytes: Array[Byte]): String = {
     val sb = new StringBuilder
@@ -27,12 +34,35 @@ object Utils {
     MessagePack.newUnpacker(response).unpackValue.toJson
   }
 
-  def jsonToList(json: String): String = {
-    json //todo
-  }
+  def parseReplays(response: String, numberOfMatchesQueried: Int): Unit = { // really ugly parsing I'm sorry, blame arcsys
+    val jsonList: JsValue = (Json.parse(response).as[List[JsValue]]).tail.head(2)
+    // first value in list is the match index in the response. for example: jsonList(y)(3)), y being the match index
 
-  def prettyPrintToScreen(response: String) = {
-    println(response.parseJson.prettyPrint)
+    for (i <- 0 until numberOfMatchesQueried) {
+      val matchID = jsonList(i)(0).toString.toLong
+      val matchTimestamp = jsonList(i)(8).toString.replace("\"", "")
+
+      val winnerPlayerID = jsonList(i)(5)(0)(0).toString.replace("\"", "").toLong
+      val winnerPlayerName = jsonList(i)(5)(0)(1).toString.replace("\"", "")
+      val winnerCharacters = List[String](Characters(jsonList(i)(3)(0).toString().toInt).toString, Characters(jsonList(i)(3)(1).toString().toInt).toString, Characters(jsonList(i)(3)(2).toString().toInt).toString)
+
+      val loserPlayerID = jsonList(i)(6)(0)(0).toString.replace("\"", "").toLong
+      val loserPlayerName = jsonList(i)(6)(0)(1).toString().replace("\"", "")
+      val loserCharacters = List[String](Characters(jsonList(i)(4)(0).toString().toInt).toString, Characters(jsonList(i)(4)(1).toString().toInt).toString, Characters(jsonList(i)(4)(2).toString().toInt).toString)
+
+//      println(s"Unique match ID: $matchID")
+//      println(s"Match Timestamp: $matchTimestamp\n")
+//
+//      println(s"Winner Player ID:  $winnerPlayerID")
+//      println(s"Winner Player Name: $winnerPlayerName")
+//      println(s"Winner Characters:  $winnerCharacters\n")
+//
+//      println(s"Loser Player ID: $loserPlayerID")
+//      println(s"Loser Player Name: $loserPlayerName")
+//      println(s"Loser Characters: $loserCharacters\n")
+
+      Database.writeToDB(ReplayResults(matchID, matchTimestamp, winnerPlayerID, winnerPlayerName, winnerCharacters, loserPlayerID, loserPlayerName, loserCharacters))
+    }
   }
 
 }
