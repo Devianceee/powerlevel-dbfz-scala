@@ -27,7 +27,7 @@ object Main extends IOApp.Simple {
   val replayResponse: Stream[IO, Any] = Stream.eval(IO(Utils.prettyPrintToScreen(Requests.replayRequest(loginTimestamp, 0, 1, 11))))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
-  val every25Secs = Cron.unsafeParse("*/25 * * ? * *")
+  val every25Secs = Cron.unsafeParse("*/15 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
@@ -42,9 +42,9 @@ object Main extends IOApp.Simple {
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
   override def run: IO[Unit] = {
-    loginTimestamp = Requests.getLoginTimeStamp
-
-    cronTasks.attempt.compile.drain.unsafeRunSync()
+//    loginTimestamp = Requests.getLoginTimeStamp
+      println(Characters.Goku_SSJ.id)
+//    cronTasks.attempt.compile.drain.unsafeRunSync()
 //    Utils.prettyPrintToScreen(Requests.replayRequest(Requests.getLoginTimeStamp, 0, 1, 11))
     IO.unit
   }
