@@ -1,7 +1,7 @@
 package org.powerlevel
 
 import wvlet.airframe.msgpack.spi.MessagePack
-
+import spray.json._
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,6 +28,10 @@ object Utils {
 
   def jsonToList(json: String): String = {
     json //todo
+  }
+
+  def prettyPrintToScreen(response: String) = {
+    println(response.parseJson.prettyPrint)
   }
 
 }

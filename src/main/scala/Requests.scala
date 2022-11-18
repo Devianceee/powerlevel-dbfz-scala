@@ -10,6 +10,7 @@ import org.http4s.client.{Client, JavaNetClientBuilder}
 import org.http4s.implicits.http4sLiteralsSyntax
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 import spray.json._
+import com.typesafe.scalalogging.Logger
 
 
 object Requests {
@@ -23,14 +24,42 @@ object Requests {
   }
 
   def replayRequest(timestamp: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): String = {
+    println("Getting Replays")
+
     val httpClient: Client[IO] = JavaNetClientBuilder[IO].create
-    val replayJson = s"""[["180205073302944623", $timestamp,2,"0.0.3",3], [7, 1, $replayPages, $numberOfMatchesQueried, [28, $character, 102, $fromRank, -1, []]]]"""
+    val replayJson = s"""[
+                        |    [
+                        |        "180205073302944623",
+                        |        "$timestamp",
+                        |        2,
+                        |        "0.0.3",
+                        |        3
+                        |    ],
+                        |    [
+                        |        7,
+                        |        1,
+                        |        $replayPages,
+                        |        $numberOfMatchesQueried,
+                        |        [
+                        |            28,
+                        |            $character,
+                        |            102,
+                        |            $fromRank,
+                        |            -1,
+                        |            [
+                        |            ]
+                        |        ]
+                        |    ]
+                        |]""".stripMargin
 
     val postRequest = POST (UrlForm("data" -> Utils.packJson(replayJson)), uri"https://dbf.channel.or.jp/api/catalog/get_replay")
     Utils.unpackResponse(httpClient.expect[Array[Byte]](postRequest).unsafeRunSync())
   }
 
   def getLoginTimeStamp: String = {
-    loginRequest().substring(3).dropRight(140) // scuffed way to do this but can't be bothered to figure out right now. TODO for later
+    println("Getting Login Timestamp...")
+    val timestamp = loginRequest().substring(3).dropRight(140) // scuffed way to do this but can't be bothered to figure out right now. TODO for later
+    println("Obtained Login Timestamp!")
+    return timestamp
   }
 }

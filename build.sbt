@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.wvlet.airframe" %% "airframe-msgpack" % "22.11.1",
   "io.spray" %% "spray-json" % "1.3.5",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
 )
 
 lazy val root = (project in file("."))

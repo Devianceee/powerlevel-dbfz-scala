@@ -22,6 +22,7 @@
     <orderEntry type="library" name="sbt: com.comcast:ip4s-core_2.12:3.1.2:jar" level="project" />
     <orderEntry type="library" name="sbt: com.github.alonsodomin.cron4s:cron4s-core_2.12:0.6.1:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twitter:hpack:1.0.2:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.typesafe.scala-logging:scala-logging_2.12:3.9.4:jar" level="project" />
     <orderEntry type="library" name="sbt: eu.timepit:fs2-cron-core_2.12:0.7.2:jar" level="project" />
     <orderEntry type="library" name="sbt: eu.timepit:fs2-cron-cron4s_2.12:0.7.2:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-core_2.12:0.14.1:jar" level="project" />
@@ -45,6 +46,7 @@
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-collection-compat_2.12:2.8.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.12.17:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-reflect:2.12.17:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scodec:scodec-bits_2.12:1.1.30:jar" level="project" />
     <orderEntry type="library" name="sbt: org.slf4j:slf4j-api:1.7.35:jar" level="project" />
     <orderEntry type="library" name="sbt: org.typelevel:case-insensitive_2.12:1.2.0:jar" level="project" />
