@@ -27,17 +27,18 @@ object Main extends IOApp.Simple {
   val replayResponse: Stream[IO, Any] = Stream.eval(IO(Utils.prettyPrintToScreen(Requests.replayRequest(loginTimestamp, 0, 1, 11))))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
-  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
-  val every30Mins = Cron.unsafeParse("0 0,30 * ? * *")
+  val every25Secs = Cron.unsafeParse("*/25 * * ? * *")
+  val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
-    every20Secs -> printForReplay,
-    every20Secs -> replayResponse,
-    every30Mins -> printForLogin,
-    every30Mins -> loginResponse,
+    every25Secs -> printForReplay,
+    every25Secs -> replayResponse,
+    every15Mins -> printForLogin,
+    every15Mins -> loginResponse,
   ))
 
   // create case class to parse replay responses and
+  // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
   override def run: IO[Unit] = {

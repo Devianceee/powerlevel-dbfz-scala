@@ -12,6 +12,8 @@ import spray.json.DefaultJsonProtocol.StringJsonFormat
 import spray.json._
 import com.typesafe.scalalogging.Logger
 
+case class ReplayResults(MatchTime: String, winnerID: String, winnerName: String, loserID: String, loserName: String)
+// TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
 
 object Requests {
 
