@@ -24,15 +24,20 @@ object Main extends IOApp.Simple {
 
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
   val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
+
   val loginResponse: Stream[IO, Any] = Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp))
-  def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank), numberOfMatchesQueried)))
+
+  def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(
+    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank) , numberOfMatchesQueried)
+  )
+  )
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
   val every21Secs = Cron.unsafeParse("1,21,41 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
-    every21Secs -> printForReplay,
+//    every21Secs -> printForReplay,
     every21Secs -> replayResponseRank(11),
     every21Secs -> replayResponseRank(101),
     every21Secs -> replayResponseRank(201),
@@ -78,7 +83,7 @@ object Main extends IOApp.Simple {
 
     loginTimestamp = Requests.getLoginTimeStamp
     println(loginTimestamp)
-//    cronTasks.attempt.compile.drain.unsafeRunSync()
+    cronTasks.attempt.compile.drain.unsafeRunSync()
     IO.unit
   }
 }

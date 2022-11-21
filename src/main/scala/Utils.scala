@@ -1,10 +1,11 @@
 package org.powerlevel
 
+import cats.effect.IO
+import play.api.libs.json._
 import wvlet.airframe.msgpack.spi.MessagePack
 
-import java.time.{LocalDateTime, OffsetDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import java.time.format.DateTimeFormatter
-import play.api.libs.json._
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 
 object Utils {
 
@@ -30,11 +31,14 @@ object Utils {
     convertBytesToHex(MessagePack.fromJSON(json))
   }
 
-  def unpackResponse(response: Array[Byte]): String = {
-    MessagePack.newUnpacker(response).unpackValue.toJson
+  def unpackResponse(response: IO[Array[Byte]]): IO[String] = {
+    for {
+      x <- response
+      unpacked <- IO(MessagePack.newUnpacker(x).unpackValue.toJson)
+    } yield unpacked
   }
 
-  def parseReplays(response: String, numberOfMatchesQueried: Int): Unit = { // really ugly parsing I'm sorry, blame arcsys
+  def parseReplays(response: String, numberOfMatchesQueried: Int): Unit = { // really ugly parsing I'm sorry, blame ArcSys for not keying their json
     val jsonList: JsValue = (Json.parse(response).as[List[JsValue]]).tail.head(2)
     // first value in list is the match index in the response. for example: jsonList(y)(3)), y being the match index
 
@@ -63,6 +67,6 @@ object Utils {
 
       Database.writeToDB(ReplayResults(matchID, matchTimestamp, winnerPlayerID, winnerPlayerName, winnerCharacters, loserPlayerID, loserPlayerName, loserCharacters))
     }
+    println("Replay ping! The time is: " + Utils.timeNow)
   }
-
 }
