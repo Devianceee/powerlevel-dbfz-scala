@@ -1,7 +1,14 @@
 package org.powerlevel
 
-import cats.effect.{IO, _}
+import cats.effect.IO.executionContext
 import cats.effect.unsafe.implicits.global
+import cats.effect.{IO, _}
+
+import scala.concurrent.ExecutionContext
+//import cats.effect.unsafe.implicits.global
+
+//import scala.concurrent.ExecutionContext.global
+import com.comcast.ip4s._
 import com.typesafe.scalalogging.Logger
 import cron4s.Cron
 import eu.timepit.fs2cron.cron4s.Cron4sScheduler
@@ -12,7 +19,14 @@ import org.http4s.Method.POST
 import org.http4s.UrlForm
 import org.http4s.client.dsl.io._
 import org.http4s.client.{Client, JavaNetClientBuilder}
-import org.http4s.implicits.http4sLiteralsSyntax
+import org.http4s.ember.server._
+import org.http4s.implicits._
+import org.http4s.server.{Router, Server}
+import org.powerlevel.Main.loginTimestamp
+import cats.effect._
+//import cats.effect.unsafe.IORuntime.global
+import org.http4s._
+import org.http4s.dsl.io._
 
 object Main extends IOApp.Simple {
 
@@ -20,15 +34,18 @@ object Main extends IOApp.Simple {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
   var loginTimestamp: String = "" // Yes I hate using a var too, I didn't want to do this too
+  var cronLoginTimestamp: IO[String] = IO[String]("") // Yes I hate using a var too, I didn't want to do this too
   val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
 
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
   val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
 
-  val loginResponse: Stream[IO, Any] = Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp))
+//  val loginResponse: Stream[IO, Any] = {
+//    Stream.eval(IO(for {x <- Requests.getLoginTimeStamp} yield loginTimestamp = x))
+//  }
 
   def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(
-    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank) , numberOfMatchesQueried)
+    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank)).unsafeRunSync()
   )
   )
 
@@ -37,7 +54,7 @@ object Main extends IOApp.Simple {
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
-//    every21Secs -> printForReplay,
+    every21Secs -> printForReplay,
     every21Secs -> replayResponseRank(11),
     every21Secs -> replayResponseRank(101),
     every21Secs -> replayResponseRank(201),
@@ -71,19 +88,41 @@ object Main extends IOApp.Simple {
     every21Secs -> replayResponseRank(2901),
     every21Secs -> replayResponseRank(3001),
     every15Mins -> printForLogin,
-    every15Mins -> loginResponse,
+//    every15Mins -> loginResponse,
   ))
 
   // create case class to parse replay responses and
   // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
-  override def run: IO[Unit] = {
-    // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
 
-    loginTimestamp = Requests.getLoginTimeStamp
-    println(loginTimestamp)
-    cronTasks.attempt.compile.drain.unsafeRunSync()
+//  def createServer() = {
+//    for {
+//      loginTimestamp <- Requests.getLoginTimeStamp
+////      _ <- cronTasks.attempt
+//      val helloWorldService = HttpRoutes.of[IO] {
+//        case GET -> Root =>
+//          Ok(s"Hello!")
+//      }
+//
+//      val httpApp = Router("/" -> helloWorldService).orNotFound
+//      server =
+//        EmberServerBuilder.default[IO].withHost(ipv4"0.0.0.0").withPort(port"8080").withHttpApp(httpApp)
+//      _ = server.build.use(_ => IO.never)
+//    } yield server
+//  }
+
+  def run: IO[Unit] = {
+    // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
+    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
+
+//    for(e <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 3, 11)).unsafeRunSync()) {
+//      println(e)
+//    }
+//    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 3, 11)).unsafeRunSync()
+    cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
+//    createServer().unsafeRunSync()
+    //cir.is for config files
     IO.unit
   }
 }

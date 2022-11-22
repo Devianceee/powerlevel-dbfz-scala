@@ -34,39 +34,29 @@ object Utils {
   def unpackResponse(response: IO[Array[Byte]]): IO[String] = {
     for {
       x <- response
-      unpacked <- IO(MessagePack.newUnpacker(x).unpackValue.toJson)
-    } yield unpacked
+    } yield MessagePack.newUnpacker(x).unpackValue.toJson
   }
 
-  def parseReplays(response: String, numberOfMatchesQueried: Int): Unit = { // really ugly parsing I'm sorry, blame ArcSys for not keying their json
-    val jsonList: JsValue = (Json.parse(response).as[List[JsValue]]).tail.head(2)
-    // first value in list is the match index in the response. for example: jsonList(y)(3)), y being the match index
+  def parseCharacters(chars: JsValue): List[String] = {
+    return List(Characters(chars(0).toString().toInt).toString,
+      Characters(chars(1).toString().toInt).toString, Characters(chars(2).toString().toInt).toString)
+  }
 
-    for (i <- 0 until numberOfMatchesQueried) {
-      val matchID = jsonList(i)(0).toString.toLong
-      val matchTimestamp = jsonList(i)(8).toString.replace("\"", "")
+  def parseReplays(response: IO[String]) = { // really ugly parsing I'm sorry, blame ArcSys for not keying their json
+//    val jsonList: JsValue = (Json.parse(response).as[List[JsValue]]).tail.head(2)
+    val jsonList: IO[JsValue] = for {
+      parse <- response
+    } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
-      val winnerPlayerID = jsonList(i)(5)(0)(0).toString.replace("\"", "").toLong
-      val winnerPlayerName = jsonList(i)(5)(0)(1).toString.replace("\"", "")
-      val winnerCharacters = List[String](Characters(jsonList(i)(3)(0).toString().toInt).toString, Characters(jsonList(i)(3)(1).toString().toInt).toString, Characters(jsonList(i)(3)(2).toString().toInt).toString)
-
-      val loserPlayerID = jsonList(i)(6)(0)(0).toString.replace("\"", "").toLong
-      val loserPlayerName = jsonList(i)(6)(0)(1).toString().replace("\"", "")
-      val loserCharacters = List[String](Characters(jsonList(i)(4)(0).toString().toInt).toString, Characters(jsonList(i)(4)(1).toString().toInt).toString, Characters(jsonList(i)(4)(2).toString().toInt).toString)
-
-//      println(s"Unique match ID: $matchID")
-//      println(s"Match Timestamp: $matchTimestamp\n")
-//
-//      println(s"Winner Player ID:  $winnerPlayerID")
-//      println(s"Winner Player Name: $winnerPlayerName")
-//      println(s"Winner Characters:  $winnerCharacters\n")
-//
-//      println(s"Loser Player ID: $loserPlayerID")
-//      println(s"Loser Player Name: $loserPlayerName")
-//      println(s"Loser Characters: $loserCharacters\n")
-
-      Database.writeToDB(ReplayResults(matchID, matchTimestamp, winnerPlayerID, winnerPlayerName, winnerCharacters, loserPlayerID, loserPlayerName, loserCharacters))
+    val matches: IO[List[ReplayResults]] = jsonList.map{ jsList =>
+      jsList.as[List[JsValue]].map(wholeMatch => // each whole match
+        wholeMatch.as[List[JsValue]] match {
+          case rawID :: _ :: _ :: rawWinnerCharacters :: rawLoserCharacters :: rawWinnerPlayer :: rawLoserPlayer :: _ :: rawMatchTime :: _  =>
+            (new ReplayResults(rawID.toString.replace("\"", "").toLong, rawMatchTime.toString.replace("\"", ""), // Match ID, Match Date&Time
+              rawWinnerPlayer.head(0).toString.replace("\"", "").toLong, rawWinnerPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawWinnerCharacters), // Winner ID, name and characters
+              rawLoserPlayer.head(0).toString.replace("\"", "").toLong, rawLoserPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawLoserCharacters))) // Loser ID, name and characters
+        })
     }
-    println("Replay ping! The time is: " + Utils.timeNow)
+    Database.writeToDB(matches)
   }
 }
