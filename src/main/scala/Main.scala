@@ -95,7 +95,6 @@ object Main extends IOApp.Simple {
   // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
-
 //  def createServer() = {
 //    for {
 //      loginTimestamp <- Requests.getLoginTimeStamp
@@ -116,9 +115,8 @@ object Main extends IOApp.Simple {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
 
     loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
-    cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
-//    createServer().unsafeRunSync()
-    //cir.is for config files
+//    cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
+    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1, 11)).unsafeRunSync()
     IO.unit
   }
 }

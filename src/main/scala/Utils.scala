@@ -5,11 +5,15 @@ import play.api.libs.json._
 import wvlet.airframe.msgpack.spi.MessagePack
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 
 object Utils {
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+
+  def timestampToEpoch(s: JsValue): Long = {
+    LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
+  }
 
   def jpTimeParse(matchTime: String): String = {
     val formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss")
@@ -55,7 +59,7 @@ object Utils {
       jsList.as[List[JsValue]].map(wholeMatch => // each whole match
         wholeMatch.as[List[JsValue]] match {
           case rawID :: _ :: _ :: rawWinnerCharacters :: rawLoserCharacters :: rawWinnerPlayer :: rawLoserPlayer :: _ :: rawMatchTime :: _  =>
-            (new ReplayResults(rawID.toString.replace("\"", "").toLong, rawMatchTime.toString.replace("\"", ""), // Match ID, Match Date&Time
+            (ReplayResults(rawID.toString.replace("\"", "").toLong, timestampToEpoch(rawMatchTime), // Match ID, Match Date&Time
               rawWinnerPlayer.head(0).toString.replace("\"", "").toLong, rawWinnerPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawWinnerCharacters), // Winner ID, name and characters
               rawLoserPlayer.head(0).toString.replace("\"", "").toLong, rawLoserPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawLoserCharacters))) // Loser ID, name and characters
         })

@@ -10,9 +10,7 @@ import org.http4s.ember.client._
 import org.http4s.implicits.http4sLiteralsSyntax
 import play.api.libs.json.{JsValue, Json}
 
-case class ReplayResults(uniqueMatchID: Long, matchTime: String,
-                         winnerID: Long, winnerName: String, winnerCharacters: List[String],
-                         loserID: Long, loserName: String, loserCharacters: List[String])
+
 
 object Requests {
 
