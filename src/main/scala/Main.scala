@@ -113,10 +113,12 @@ object Main extends IOApp.Simple {
 
   def run: IO[Unit] = {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
+    // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
+    // TODO: traverse keyword is very nice, see if I can use it in other places
 
     loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
 //    cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
-    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1, 11)).unsafeRunSync()
+    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1000, 11)).unsafeRunSync()
     IO.unit
   }
 }
