@@ -43,11 +43,14 @@ object Utils {
   }
 
   def parseReplays(response: IO[String]) = { // really ugly parsing I'm sorry, blame ArcSys for not keying their json
-//    val jsonList: JsValue = (Json.parse(response).as[List[JsValue]]).tail.head(2)
     val jsonList: IO[JsValue] = for {
       parse <- response
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
+    /*
+    TODO: Error checking in case of malformed response,
+     probably when receiving the original request or using an Option to error handle and not write to database if None
+    */
     val matches: IO[List[ReplayResults]] = jsonList.map{ jsList =>
       jsList.as[List[JsValue]].map(wholeMatch => // each whole match
         wholeMatch.as[List[JsValue]] match {

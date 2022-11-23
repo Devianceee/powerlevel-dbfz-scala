@@ -40,9 +40,9 @@ object Main extends IOApp.Simple {
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
   val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
 
-//  val loginResponse: Stream[IO, Any] = {
-//    Stream.eval(IO(for {x <- Requests.getLoginTimeStamp} yield loginTimestamp = x))
-//  }
+  val loginResponse: Stream[IO, Any] = {
+    Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync()))
+  }
 
   def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(
     Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank)).unsafeRunSync()
@@ -88,7 +88,7 @@ object Main extends IOApp.Simple {
     every21Secs -> replayResponseRank(2901),
     every21Secs -> replayResponseRank(3001),
     every15Mins -> printForLogin,
-//    every15Mins -> loginResponse,
+    every15Mins -> loginResponse,
   ))
 
   // create case class to parse replay responses and
@@ -114,12 +114,8 @@ object Main extends IOApp.Simple {
 
   def run: IO[Unit] = {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
-    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
 
-//    for(e <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 3, 11)).unsafeRunSync()) {
-//      println(e)
-//    }
-//    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 3, 11)).unsafeRunSync()
+    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
     cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
 //    createServer().unsafeRunSync()
     //cir.is for config files
