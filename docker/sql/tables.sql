@@ -23,7 +23,7 @@ CREATE TABLE game_results (
 -- Players
 -- select pg_size_pretty(pg_relation_size('players')); for table size
 -- select * from players; for all players
--- -- select * from players where player_name like 'INSERT_PLAYER_NAME'; for finding players with similar name
+-- -- select * from players where lower(player_name) like '%INSERT_PLAYER_NAME%'; for finding players with similar name
 -- -- select * from players where unique_player_id = 'INSERT_UNIQUE_PLAYER_ID'; for finding specific player after finding ID
 
 CREATE TABLE players (

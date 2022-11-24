@@ -30,12 +30,8 @@ object Requests {
     foo
   }
 
-  def replayRequest(timestamp: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
-    var time = timestamp
-    if (time.length < 12) {
-      println("error with login timestamp, requesting again...")
-      time = Requests.getLoginTimeStamp.unsafeRunSync()
-    }
+  def replayRequest(replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
+    val time = Requests.getLoginTimeStamp.unsafeRunSync()
 
     val replayJson = s"""[
                         |    [
@@ -53,7 +49,7 @@ object Requests {
                         |        [
                         |            28,
                         |            $character,
-                        |            102,
+                        |            104,
                         |            $fromRank,
                         |            -1,
                         |            [
@@ -73,9 +69,9 @@ object Requests {
 
   def getLoginTimeStamp: IO[String] = {
     val jsonList: IO[String] = for {
-      _ <- IO.pure(println("Getting Login Timestamp..."))
+//      _ <- IO.pure(println("Getting Login Timestamp..."))
       request <- getJson(loginRequest())
-      _ = println("Obtained Login Timestamp!")
+//      _ = println("Obtained Login Timestamp!")
     } yield request.replace("\"", "")
     jsonList
   }

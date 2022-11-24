@@ -19,7 +19,7 @@ import org.http4s.client.{Client, JavaNetClientBuilder}
 import org.http4s.ember.server._
 import org.http4s.implicits._
 import org.http4s.server.{Router, Server}
-import org.powerlevel.Main.loginTimestamp
+//import org.powerlevel.Main.loginTimestamp
 import cats.effect._
 import org.http4s._
 import org.http4s.dsl.io._
@@ -29,84 +29,31 @@ object Main extends IOApp.Simple {
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
-  var loginTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync() // Yes I hate using a var too, I didn't want to do this too
-  var cronLoginTimestamp: IO[String] = IO[String]("") // Yes I hate using a var too, I didn't want to do this too
   val numberOfMatchesQueried = 1000 // better to do this via .conf file or some other environment way
 
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
-  val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
-
-  val loginResponse: Stream[IO, Any] = {
-    Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync()))
-  }
 
   def replayResponseRank: Stream[IO, Any] = Stream.eval(IO(Database.writeToDB(for {
-    r1 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 11))
-    r2 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 501))
-    r3 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1001))
-    r4 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1501))
-    r5 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2001))
-    r6 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2501))
-    r7 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3001))
-    r8 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3501))
-    r9 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 4001))
-    r10 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 4501))
-    r11 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 5001))
+    r1 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 11))
+    r2 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 501))
+    r3 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 1001))
+    r4 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 1501))
+    r5 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 2001))
+    r6 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 2501))
+    r7 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 3001))
+    r8 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 3501))
+    r9 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 4001))
+    r10 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 4501))
+    r11 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 5001))
   } yield r1 ++ r2 ++ r3 ++ r4 ++ r5 ++ r6 ++ r7 ++ r8 ++ r9 ++ r10 ++ r11).unsafeRunSync()))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
-//  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
   val every20Secs = Cron.unsafeParse("5,25,45 * * ? * *")
-  val every20SecsThird = Cron.unsafeParse("8,28,48 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
     every20Secs -> printForReplay,
     every20Secs -> replayResponseRank,
-//    every20Secs -> replayResponseRank(101),
-//    every20Secs -> replayResponseRank(201),
-//    every20Secs -> replayResponseRank(301),
-//    every20Secs -> replayResponseRank(401),
-//    every20Secs -> replayResponseRank(501),
-//    every20Secs -> replayResponseRank(601),
-//    every20Secs -> replayResponseRank(701),
-//    every20Secs -> replayResponseRank(801),
-//    every20Secs -> replayResponseRank(901),
-//    every20Secs -> replayResponseRank(1001),
-//    every20SecsSecond -> replayResponseRank(1101),
-//    every20SecsSecond -> replayResponseRank(1101),
-//    every20SecsSecond -> replayResponseRank(1201),
-//    every20SecsSecond -> replayResponseRank(1301),
-//    every20SecsSecond -> replayResponseRank(1401),
-//    every20SecsSecond -> replayResponseRank(1501),
-//    every20SecsSecond -> replayResponseRank(1601),
-//    every20SecsSecond -> replayResponseRank(1701),
-//    every20SecsSecond -> replayResponseRank(1801),
-//    every20SecsSecond -> replayResponseRank(1901),
-//    every20SecsSecond -> replayResponseRank(2001),
-//    every20SecsSecond -> replayResponseRank(2101),
-//    every20SecsSecond -> replayResponseRank(2201),
-//    every20SecsSecond -> replayResponseRank(2301),
-//    every20SecsSecond -> replayResponseRank(2401),
-//    every20SecsSecond -> replayResponseRank(2501),
-//    every20SecsSecond -> replayResponseRank(2601),
-//    every20SecsSecond -> replayResponseRank(2701),
-//    every20SecsSecond -> replayResponseRank(2801),
-//    every20SecsSecond -> replayResponseRank(2901),
-//    every20SecsThird -> replayResponseRank(3001),
-//    every20SecsThird -> replayResponseRank(3101),
-//    every20SecsThird -> replayResponseRank(3101),
-//    every20SecsThird -> replayResponseRank(3201),
-//    every20SecsThird -> replayResponseRank(3301),
-//    every20SecsThird -> replayResponseRank(3401),
-//    every20SecsThird -> replayResponseRank(3501),
-//    every20SecsThird -> replayResponseRank(3601),
-//    every20SecsThird -> replayResponseRank(3701),
-//    every20SecsThird -> replayResponseRank(3801),
-//    every20SecsThird -> replayResponseRank(3901),
-//    every20SecsThird -> replayResponseRank(4001),
-    every15Mins -> printForLogin,
-    every15Mins -> loginResponse,
   ))
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
@@ -116,7 +63,6 @@ object Main extends IOApp.Simple {
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
 
-    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
     cronTasks.repeat.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
 //    Database.writeToDB(Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 10, 11))).unsafeRunSync()
     IO.unit
