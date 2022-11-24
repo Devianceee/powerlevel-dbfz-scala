@@ -40,11 +40,18 @@ object Main extends IOApp.Simple {
     Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync()))
   }
 
-  def replayResponseRank: Stream[IO, Any] = Stream.eval(IO(Database.writeToDB(for {r1 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 11))} yield r1).unsafeRunSync()))
+  def replayResponseRank: Stream[IO, Any] = Stream.eval(IO(Database.writeToDB(for {
+    r1 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 11))
+    r2 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1001))
+    r3 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1501))
+    r4 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2001))
+    r5 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2501))
+    r6 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3001))
+  } yield r1 ++ r2 ++ r3 ++ r4 ++ r5 ++ r6).unsafeRunSync()))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
-  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
-  val every20SecsSecond = Cron.unsafeParse("4,24,44 * * ? * *")
+//  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
+  val every20Secs = Cron.unsafeParse("2,22,42 * * ? * *")
   val every20SecsThird = Cron.unsafeParse("8,28,48 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
