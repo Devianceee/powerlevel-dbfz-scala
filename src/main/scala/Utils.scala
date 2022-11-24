@@ -52,16 +52,9 @@ object Utils {
       parse <- response
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
-//    val jsonList: IO[JsValue] = response.map {unparsedResponse =>
-//      unparsedResponse.collect {
-//        case
-//      }
-//      Json.parse(unparsedResponse).as[List[List[JsValue]]].tail.head(2)
-//    }
-
     /*
     TODO: Error checking in case of malformed response,
-     probably when receiving the original request or using an Option to error handle and not write to database if None
+     Try with Case Success or Failure with Failure returning Failure and being handled by Database.writeToDB()
     */
     val matches: IO[List[ReplayResults]] = jsonList.map{ jsList =>
       jsList.as[List[JsValue]].map(wholeMatch => // each whole match

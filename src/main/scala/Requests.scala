@@ -31,7 +31,10 @@ object Requests {
   }
 
   def replayRequest(replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
-    val time = Requests.getLoginTimeStamp.unsafeRunSync()
+    var time = Requests.getLoginTimeStamp.unsafeRunSync()
+    if (time.length < 6) {
+      time = Requests.getLoginTimeStamp.unsafeRunSync()
+    }
 
     val replayJson = s"""[
                         |    [

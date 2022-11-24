@@ -5,7 +5,7 @@ CREATE DATABASE mytable;
 -- Matches
 -- select pg_size_pretty(pg_relation_size('game_results')); for table size
 -- select * from game_results; for all games
--- select * from game_results where winner_id = 'INSERT_PLAYER_ID' or loser_id = 'INSERT_PLAYER_ID'; for all games from specific player
+-- select * from game_results where lower (winner_name) like '%INSERT_PLAYER_NAME%' or lower (loser_name) like '%INSERT_PLAYER_NAME%';
 -- select * from game_results where winner_id = 'INSERT_PLAYER_ID' or loser_id = 'INSERT_PLAYER_ID' order by match_time desc; for all games from specific player ordered by date descending
 
 CREATE TABLE game_results (

@@ -74,10 +74,6 @@ object Database {
       }
 //      _ = println(Utils.timeNow + ": Finished writing to DB!")
     }
-
-//    replayResults.map{ result =>
-//      saveResult(result)
-//    }
-
   }
+
 }
