@@ -40,10 +40,7 @@ object Main extends IOApp.Simple {
     Stream.eval(IO(loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync()))
   }
 
-  def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(
-    Database.writeToDB(Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank))).unsafeRunSync()
-    )
-  )
+  def replayResponseRank: Stream[IO, Any] = Stream.eval(IO(Database.writeToDB(for {r1 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 11))} yield r1).unsafeRunSync()))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
   val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
@@ -53,49 +50,49 @@ object Main extends IOApp.Simple {
 
   val cronTasks = cronScheduler.schedule(List(
     every20Secs -> printForReplay,
-    every20Secs -> replayResponseRank(11),
-    every20Secs -> replayResponseRank(101),
-    every20Secs -> replayResponseRank(201),
-    every20Secs -> replayResponseRank(301),
-    every20Secs -> replayResponseRank(401),
-    every20Secs -> replayResponseRank(501),
-    every20Secs -> replayResponseRank(601),
-    every20Secs -> replayResponseRank(701),
-    every20Secs -> replayResponseRank(801),
-    every20Secs -> replayResponseRank(901),
-    every20Secs -> replayResponseRank(1001),
-    every20SecsSecond -> replayResponseRank(1101),
-    every20SecsSecond -> replayResponseRank(1101),
-    every20SecsSecond -> replayResponseRank(1201),
-    every20SecsSecond -> replayResponseRank(1301),
-    every20SecsSecond -> replayResponseRank(1401),
-    every20SecsSecond -> replayResponseRank(1501),
-    every20SecsSecond -> replayResponseRank(1601),
-    every20SecsSecond -> replayResponseRank(1701),
-    every20SecsSecond -> replayResponseRank(1801),
-    every20SecsSecond -> replayResponseRank(1901),
-    every20SecsSecond -> replayResponseRank(2001),
-    every20SecsSecond -> replayResponseRank(2101),
-    every20SecsSecond -> replayResponseRank(2201),
-    every20SecsSecond -> replayResponseRank(2301),
-    every20SecsSecond -> replayResponseRank(2401),
-    every20SecsSecond -> replayResponseRank(2501),
-    every20SecsSecond -> replayResponseRank(2601),
-    every20SecsSecond -> replayResponseRank(2701),
-    every20SecsSecond -> replayResponseRank(2801),
-    every20SecsSecond -> replayResponseRank(2901),
-    every20SecsThird -> replayResponseRank(3001),
-    every20SecsThird -> replayResponseRank(3101),
-    every20SecsThird -> replayResponseRank(3101),
-    every20SecsThird -> replayResponseRank(3201),
-    every20SecsThird -> replayResponseRank(3301),
-    every20SecsThird -> replayResponseRank(3401),
-    every20SecsThird -> replayResponseRank(3501),
-    every20SecsThird -> replayResponseRank(3601),
-    every20SecsThird -> replayResponseRank(3701),
-    every20SecsThird -> replayResponseRank(3801),
-    every20SecsThird -> replayResponseRank(3901),
-    every20SecsThird -> replayResponseRank(4001),
+    every20Secs -> replayResponseRank,
+//    every20Secs -> replayResponseRank(101),
+//    every20Secs -> replayResponseRank(201),
+//    every20Secs -> replayResponseRank(301),
+//    every20Secs -> replayResponseRank(401),
+//    every20Secs -> replayResponseRank(501),
+//    every20Secs -> replayResponseRank(601),
+//    every20Secs -> replayResponseRank(701),
+//    every20Secs -> replayResponseRank(801),
+//    every20Secs -> replayResponseRank(901),
+//    every20Secs -> replayResponseRank(1001),
+//    every20SecsSecond -> replayResponseRank(1101),
+//    every20SecsSecond -> replayResponseRank(1101),
+//    every20SecsSecond -> replayResponseRank(1201),
+//    every20SecsSecond -> replayResponseRank(1301),
+//    every20SecsSecond -> replayResponseRank(1401),
+//    every20SecsSecond -> replayResponseRank(1501),
+//    every20SecsSecond -> replayResponseRank(1601),
+//    every20SecsSecond -> replayResponseRank(1701),
+//    every20SecsSecond -> replayResponseRank(1801),
+//    every20SecsSecond -> replayResponseRank(1901),
+//    every20SecsSecond -> replayResponseRank(2001),
+//    every20SecsSecond -> replayResponseRank(2101),
+//    every20SecsSecond -> replayResponseRank(2201),
+//    every20SecsSecond -> replayResponseRank(2301),
+//    every20SecsSecond -> replayResponseRank(2401),
+//    every20SecsSecond -> replayResponseRank(2501),
+//    every20SecsSecond -> replayResponseRank(2601),
+//    every20SecsSecond -> replayResponseRank(2701),
+//    every20SecsSecond -> replayResponseRank(2801),
+//    every20SecsSecond -> replayResponseRank(2901),
+//    every20SecsThird -> replayResponseRank(3001),
+//    every20SecsThird -> replayResponseRank(3101),
+//    every20SecsThird -> replayResponseRank(3101),
+//    every20SecsThird -> replayResponseRank(3201),
+//    every20SecsThird -> replayResponseRank(3301),
+//    every20SecsThird -> replayResponseRank(3401),
+//    every20SecsThird -> replayResponseRank(3501),
+//    every20SecsThird -> replayResponseRank(3601),
+//    every20SecsThird -> replayResponseRank(3701),
+//    every20SecsThird -> replayResponseRank(3801),
+//    every20SecsThird -> replayResponseRank(3901),
+//    every20SecsThird -> replayResponseRank(4001),
     every15Mins -> printForLogin,
     every15Mins -> loginResponse,
   ))
@@ -104,30 +101,14 @@ object Main extends IOApp.Simple {
   // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
-//  def createServer() = {
-//    for {
-//      loginTimestamp <- Requests.getLoginTimeStamp
-////      _ <- cronTasks.attempt
-//      val helloWorldService = HttpRoutes.of[IO] {
-//        case GET -> Root =>
-//          Ok(s"Hello!")
-//      }
-//
-//      val httpApp = Router("/" -> helloWorldService).orNotFound
-//      server =
-//        EmberServerBuilder.default[IO].withHost(ipv4"0.0.0.0").withPort(port"8080").withHttpApp(httpApp)
-//      _ = server.build.use(_ => IO.never)
-//    } yield server
-//  }
-
   def run: IO[Unit] = {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
 
-//    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
+    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
     cronTasks.repeat.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
-//    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1000, 11)).unsafeRunSync()
+//    Database.writeToDB(Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 10, 11))).unsafeRunSync()
     IO.unit
   }
 }

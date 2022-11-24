@@ -32,7 +32,7 @@ object Database {
     val loserName = details.loserName
     val loserCharacters = details.loserCharacters
 
-    if (winnerID != 0 && loserID != 0) {
+    if (winnerID != 0 || loserID != 0) {
       val insertGameQuery =
         sql"""insert into game_results (unique_match_id, match_time,
            winner_id, winner_name, winner_characters,
@@ -63,16 +63,21 @@ object Database {
   }
 
 //  def findPlayerByName(s: String) // SQL query to get players
-//                                  // (select * from players where player_name like '%Deviance%';) and map to case class for all their games
+// (select * from players where player_name like '%Deviance%';) and map to case class for all their games
 
 
-  def writeToDB(replayResults: IO[List[ReplayResults]]) = {
+  def writeToDB(replayResults:IO[List[ReplayResults]]) = {
 
     replayResults.flatMap { result =>
       result.traverse { details =>
         saveResult(details)
       }
+//      _ = println(Utils.timeNow + ": Finished writing to DB!")
     }
+
+//    replayResults.map{ result =>
+//      saveResult(result)
+//    }
 
   }
 }
