@@ -31,10 +31,16 @@ object Requests {
   }
 
   def replayRequest(timestamp: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
+    var time = timestamp
+    if (time.length < 12) {
+      println("error with login timestamp, requesting again...")
+      time = Requests.getLoginTimeStamp.unsafeRunSync()
+    }
+
     val replayJson = s"""[
                         |    [
                         |        "180205073302944623",
-                        |        "$timestamp",
+                        |        "$time",
                         |        2,
                         |        "0.0.3",
                         |        3
