@@ -18,7 +18,6 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.wvlet.airframe" %% "airframe-msgpack" % "22.11.1",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
   "com.typesafe.play" %% "play-json" % "2.9.3",
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-ember-server" % http4sVersion,

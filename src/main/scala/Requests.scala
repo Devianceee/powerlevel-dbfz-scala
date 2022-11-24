@@ -67,9 +67,9 @@ object Requests {
 
   def getLoginTimeStamp: IO[String] = {
     val jsonList: IO[String] = for {
-      _ <- IO.pure(println("Getting Login Timestamp..."))
+//      _ <- IO.pure(println("Getting Login Timestamp..."))
       request <- getJson(loginRequest())
-      _ = println("Obtained Login Timestamp!")
+//      _ = println("Obtained Login Timestamp!")
     } yield request.replace("\"", "")
     jsonList
   }

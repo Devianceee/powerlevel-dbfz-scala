@@ -5,11 +5,8 @@ import cats.effect.unsafe.implicits.global
 import cats.effect.{IO, _}
 
 import scala.concurrent.ExecutionContext
-//import cats.effect.unsafe.implicits.global
 
-//import scala.concurrent.ExecutionContext.global
 import com.comcast.ip4s._
-import com.typesafe.scalalogging.Logger
 import cron4s.Cron
 import eu.timepit.fs2cron.cron4s.Cron4sScheduler
 import fs2.Stream
@@ -24,7 +21,6 @@ import org.http4s.implicits._
 import org.http4s.server.{Router, Server}
 import org.powerlevel.Main.loginTimestamp
 import cats.effect._
-//import cats.effect.unsafe.IORuntime.global
 import org.http4s._
 import org.http4s.dsl.io._
 
@@ -33,7 +29,7 @@ object Main extends IOApp.Simple {
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
-  var loginTimestamp: String = "" // Yes I hate using a var too, I didn't want to do this too
+  var loginTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync() // Yes I hate using a var too, I didn't want to do this too
   var cronLoginTimestamp: IO[String] = IO[String]("") // Yes I hate using a var too, I didn't want to do this too
   val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
 
@@ -45,48 +41,61 @@ object Main extends IOApp.Simple {
   }
 
   def replayResponseRank(fromRank: Int): Stream[IO, Any] = Stream.eval(IO(
-    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank)).unsafeRunSync()
-  )
+    Database.writeToDB(Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, fromRank))).unsafeRunSync()
+    )
   )
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
-  val every21Secs = Cron.unsafeParse("1,21,41 * * ? * *")
+  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
+  val every20SecsSecond = Cron.unsafeParse("4,24,44 * * ? * *")
+  val every20SecsThird = Cron.unsafeParse("8,28,48 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
   val cronTasks = cronScheduler.schedule(List(
-    every21Secs -> printForReplay,
-    every21Secs -> replayResponseRank(11),
-    every21Secs -> replayResponseRank(101),
-    every21Secs -> replayResponseRank(201),
-    every21Secs -> replayResponseRank(301),
-    every21Secs -> replayResponseRank(401),
-    every21Secs -> replayResponseRank(501),
-    every21Secs -> replayResponseRank(601),
-    every21Secs -> replayResponseRank(701),
-    every21Secs -> replayResponseRank(801),
-    every21Secs -> replayResponseRank(901),
-    every21Secs -> replayResponseRank(1001),
-    every21Secs -> replayResponseRank(1101),
-    every21Secs -> replayResponseRank(1101),
-    every21Secs -> replayResponseRank(1201),
-    every21Secs -> replayResponseRank(1301),
-    every21Secs -> replayResponseRank(1401),
-    every21Secs -> replayResponseRank(1501),
-    every21Secs -> replayResponseRank(1601),
-    every21Secs -> replayResponseRank(1701),
-    every21Secs -> replayResponseRank(1801),
-    every21Secs -> replayResponseRank(1901),
-    every21Secs -> replayResponseRank(2001),
-    every21Secs -> replayResponseRank(2101),
-    every21Secs -> replayResponseRank(2201),
-    every21Secs -> replayResponseRank(2301),
-    every21Secs -> replayResponseRank(2401),
-    every21Secs -> replayResponseRank(2501),
-    every21Secs -> replayResponseRank(2601),
-    every21Secs -> replayResponseRank(2701),
-    every21Secs -> replayResponseRank(2801),
-    every21Secs -> replayResponseRank(2901),
-    every21Secs -> replayResponseRank(3001),
+    every20Secs -> printForReplay,
+    every20Secs -> replayResponseRank(11),
+    every20Secs -> replayResponseRank(101),
+    every20Secs -> replayResponseRank(201),
+    every20Secs -> replayResponseRank(301),
+    every20Secs -> replayResponseRank(401),
+    every20Secs -> replayResponseRank(501),
+    every20Secs -> replayResponseRank(601),
+    every20Secs -> replayResponseRank(701),
+    every20Secs -> replayResponseRank(801),
+    every20Secs -> replayResponseRank(901),
+    every20Secs -> replayResponseRank(1001),
+    every20SecsSecond -> replayResponseRank(1101),
+    every20SecsSecond -> replayResponseRank(1101),
+    every20SecsSecond -> replayResponseRank(1201),
+    every20SecsSecond -> replayResponseRank(1301),
+    every20SecsSecond -> replayResponseRank(1401),
+    every20SecsSecond -> replayResponseRank(1501),
+    every20SecsSecond -> replayResponseRank(1601),
+    every20SecsSecond -> replayResponseRank(1701),
+    every20SecsSecond -> replayResponseRank(1801),
+    every20SecsSecond -> replayResponseRank(1901),
+    every20SecsSecond -> replayResponseRank(2001),
+    every20SecsSecond -> replayResponseRank(2101),
+    every20SecsSecond -> replayResponseRank(2201),
+    every20SecsSecond -> replayResponseRank(2301),
+    every20SecsSecond -> replayResponseRank(2401),
+    every20SecsSecond -> replayResponseRank(2501),
+    every20SecsSecond -> replayResponseRank(2601),
+    every20SecsSecond -> replayResponseRank(2701),
+    every20SecsSecond -> replayResponseRank(2801),
+    every20SecsSecond -> replayResponseRank(2901),
+    every20SecsThird -> replayResponseRank(3001),
+    every20SecsThird -> replayResponseRank(3101),
+    every20SecsThird -> replayResponseRank(3101),
+    every20SecsThird -> replayResponseRank(3201),
+    every20SecsThird -> replayResponseRank(3301),
+    every20SecsThird -> replayResponseRank(3401),
+    every20SecsThird -> replayResponseRank(3501),
+    every20SecsThird -> replayResponseRank(3601),
+    every20SecsThird -> replayResponseRank(3701),
+    every20SecsThird -> replayResponseRank(3801),
+    every20SecsThird -> replayResponseRank(3901),
+    every20SecsThird -> replayResponseRank(4001),
     every15Mins -> printForLogin,
     every15Mins -> loginResponse,
   ))
@@ -116,9 +125,9 @@ object Main extends IOApp.Simple {
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
 
-    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
-//    cronTasks.attempt.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
-    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1000, 11)).unsafeRunSync()
+//    loginTimestamp = Requests.getLoginTimeStamp.unsafeRunSync() // not sure best way to do this without blocking first
+    cronTasks.repeat.compile.drain.unsafeRunSync() // doesnt run without unsafeRunSync() why??
+//    Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, 1000, 11)).unsafeRunSync()
     IO.unit
   }
 }

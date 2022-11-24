@@ -31,33 +31,35 @@ object Database {
     val loserID = details.loserID
     val loserName = details.loserName
     val loserCharacters = details.loserCharacters
-//    println(winnerCharacters)
-//    println(loserCharacters)
 
-
-    val insertGameQuery =
-      sql"""insert into game_results (unique_match_id, match_time,
+    if (winnerID != 0 && loserID != 0) {
+      val insertGameQuery =
+        sql"""insert into game_results (unique_match_id, match_time,
            winner_id, winner_name, winner_characters,
            loser_id, loser_name, loser_characters) values
            ($uniqueMatchID, $matchTime,
            $winnerID, $winnerName, $winnerCharacters,
            $loserID, $loserName, $loserCharacters) on conflict do nothing""".update.run
 
-    val insertWinnerPlayerQuery =
-      sql"""insert into players (unique_player_id, player_name) values
+      val insertWinnerPlayerQuery =
+        sql"""insert into players (unique_player_id, player_name) values
            ($winnerID, $winnerName) on conflict do nothing""".update.run
 
-    val insertLoserPlayerQuery =
-      sql"""insert into players (unique_player_id, player_name) values
+      val insertLoserPlayerQuery =
+        sql"""insert into players (unique_player_id, player_name) values
            ($loserID, $loserName) on conflict do nothing""".update.run
 
-    val run = for {
-      run1 <- insertGameQuery
-      run2 <- insertWinnerPlayerQuery
-      run3 <- insertLoserPlayerQuery
-    } yield (run1, run2, run3)
+      val run = for {
+        run1 <- insertGameQuery
+        run2 <- insertWinnerPlayerQuery
+        run3 <- insertLoserPlayerQuery
+      } yield (run1, run2, run3)
 
-    run.transact(xa)
+      run.transact(xa)
+    }
+    else {
+      IO.unit
+    }
   }
 
 //  def findPlayerByName(s: String) // SQL query to get players
@@ -71,5 +73,6 @@ object Database {
         saveResult(details)
       }
     }
+
   }
 }

@@ -42,14 +42,22 @@ object Utils {
   }
 
   def parseCharacters(chars: JsValue): List[String] = {
-    return List(Characters(chars(0).toString().toInt).toString,
+    List(Characters(chars(0).toString().toInt).toString,
       Characters(chars(1).toString().toInt).toString, Characters(chars(2).toString().toInt).toString)
   }
 
   def parseReplays(response: IO[String]) = { // really ugly parsing I'm sorry, blame ArcSys for not keying their json
+
     val jsonList: IO[JsValue] = for {
       parse <- response
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
+
+//    val jsonList: IO[JsValue] = response.map {unparsedResponse =>
+//      unparsedResponse.collect {
+//        case
+//      }
+//      Json.parse(unparsedResponse).as[List[List[JsValue]]].tail.head(2)
+//    }
 
     /*
     TODO: Error checking in case of malformed response,
@@ -64,6 +72,10 @@ object Utils {
               rawLoserPlayer.head(0).toString.replace("\"", "").toLong, rawLoserPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawLoserCharacters))) // Loser ID, name and characters
         })
     }
-    Database.writeToDB(matches)
+//    Database.writeToDB(matches)
+    matches
   }
+
+
+
 }
