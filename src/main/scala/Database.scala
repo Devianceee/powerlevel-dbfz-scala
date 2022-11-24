@@ -32,7 +32,7 @@ object Database {
     val loserName = details.loserName
     val loserCharacters = details.loserCharacters
 
-    if (winnerID != 0 || loserID != 0) {
+    if (winnerID != 0 && loserID != 0) {
       val insertGameQuery =
         sql"""insert into game_results (unique_match_id, match_time,
            winner_id, winner_name, winner_characters,

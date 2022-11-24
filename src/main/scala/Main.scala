@@ -31,7 +31,7 @@ object Main extends IOApp.Simple {
 
   var loginTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync() // Yes I hate using a var too, I didn't want to do this too
   var cronLoginTimestamp: IO[String] = IO[String]("") // Yes I hate using a var too, I didn't want to do this too
-  val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 1000 // better to do this via .conf file or some other environment way
 
   val printForReplay: Stream[IO, Unit] = Stream.eval(IO(println("Replay ping! The time is: " + Utils.timeNow)))
   val printForLogin: Stream[IO, Unit] = Stream.eval(IO(println("Login ping! The time is: " + Utils.timeNow)))
@@ -42,16 +42,21 @@ object Main extends IOApp.Simple {
 
   def replayResponseRank: Stream[IO, Any] = Stream.eval(IO(Database.writeToDB(for {
     r1 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 11))
-    r2 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1001))
-    r3 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1501))
-    r4 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2001))
-    r5 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2501))
-    r6 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3001))
-  } yield r1 ++ r2 ++ r3 ++ r4 ++ r5 ++ r6).unsafeRunSync()))
+    r2 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 501))
+    r3 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1001))
+    r4 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 1501))
+    r5 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2001))
+    r6 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 2501))
+    r7 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3001))
+    r8 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 3501))
+    r9 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 4001))
+    r10 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 4501))
+    r11 <- Utils.parseReplays(Requests.replayRequest(loginTimestamp, 0, numberOfMatchesQueried, 5001))
+  } yield r1 ++ r2 ++ r3 ++ r4 ++ r5 ++ r6 ++ r7 ++ r8 ++ r9 ++ r10 ++ r11).unsafeRunSync()))
 
   val cronScheduler = Cron4sScheduler.systemDefault[IO]
 //  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
-  val every20Secs = Cron.unsafeParse("2,22,42 * * ? * *")
+  val every20Secs = Cron.unsafeParse("5,25,45 * * ? * *")
   val every20SecsThird = Cron.unsafeParse("8,28,48 * * ? * *")
   val every15Mins = Cron.unsafeParse("0 0,15,30,45 * ? * *")
 
@@ -104,8 +109,6 @@ object Main extends IOApp.Simple {
     every15Mins -> loginResponse,
   ))
 
-  // create case class to parse replay responses and
-  // TODO: add a way to make sure duplicate matches aren't stored, probably some unique identifier
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
   def run: IO[Unit] = {
