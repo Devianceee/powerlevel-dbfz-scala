@@ -1,0 +1,163 @@
+Index: build.sbt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>ThisBuild / version := \"0.1.0-SNAPSHOT\"\r\n\r\nThisBuild / scalaVersion := \"2.12.17\"\r\nval http4sVersion = \"0.23.10\"\r\nresolvers += Resolver.jcenterRepo\r\n\r\nlibraryDependencies ++= Seq(\r\n  \"eu.timepit\" %% \"fs2-cron-cron4s\" % \"0.7.2\", //and/or\r\n  \"eu.timepit\" %% \"fs2-cron-calev\" % \"0.7.2\",\r\n  \"org.typelevel\" %% \"cats-effect\" % \"3.4.0\",\r\n  \"org.http4s\" %% \"http4s-dsl\" % http4sVersion,\r\n  \"org.http4s\" %% \"http4s-circe\" % http4sVersion,\r\n  \"org.http4s\" %% \"http4s-blaze-server\" % http4sVersion,\r\n  \"org.http4s\" %% \"http4s-blaze-client\" % http4sVersion,\r\n  \"org.http4s\" %% \"http4s-ember-server\" % http4sVersion,\r\n  \"org.http4s\" %% \"http4s-ember-client\" % http4sVersion,\r\n  \"org.velvia\" %% \"msgpack4s\" % \"0.6.0\",\r\n  \"com.google.protobuf\" % \"protobuf-java-util\" % \"4.0.0-rc-2\",\r\n  \"org.json4s\" %% \"json4s-native\" % \"3.5.0\",\r\n  \"org.json4s\" %% \"json4s-jackson\" % \"3.5.0\",\r\n  \"io.circe\" %% \"circe-generic\" % \"0.14.3\",\r\n  \"io.circe\" %% \"circe-literal\" % \"0.14.3\"\r\n)\r\n\r\nlazy val root = (project in file(\".\"))\r\n  .settings(\r\n    name := \"powerlevel-dbfz-scala\",\r\n    idePackagePrefix := Some(\"org.powerlevel\")\r\n  )\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.sbt b/build.sbt
+--- a/build.sbt	(revision cf553459775d2566653353ef223380456988522f)
++++ b/build.sbt	(date 1668706598713)
+@@ -6,7 +6,6 @@
+ 
+ libraryDependencies ++= Seq(
+   "eu.timepit" %% "fs2-cron-cron4s" % "0.7.2", //and/or
+-  "eu.timepit" %% "fs2-cron-calev" % "0.7.2",
+   "org.typelevel" %% "cats-effect" % "3.4.0",
+   "org.http4s" %% "http4s-dsl" % http4sVersion,
+   "org.http4s" %% "http4s-circe" % http4sVersion,
+Index: src/main/scala/Main.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.powerlevel\r\n\r\nimport cats.effect._\r\nimport cats.effect.unsafe.implicits.global\r\nimport cron4s.Cron\r\nimport eu.timepit.fs2cron.cron4s.Cron4sScheduler\r\nimport fs2.Stream\r\nimport org.http4s.EntityDecoder.byteArrayDecoder\r\nimport org.http4s.Method.POST\r\nimport org.http4s.client._\r\nimport org.http4s.client.dsl.io._\r\nimport org.http4s.implicits.http4sLiteralsSyntax\r\nimport org.http4s.{EntityDecoder, UrlForm}\r\nimport org.velvia.MsgPack\r\nimport org.velvia.msgpack.RawStringCodecs.StringCodec\r\nimport org.velvia.msgpack._\r\n\r\nimport java.time.LocalDateTime\r\nimport java.time.format.DateTimeFormatter\r\nimport javax.xml.bind.DatatypeConverter\r\n\r\nobject Main extends IOApp.Simple {\r\n  val httpClient: Client[IO] = JavaNetClientBuilder[IO].create\r\n  val printTime: Stream[IO, Unit] = Stream.eval(IO(println(\"Hello world! The time is: \" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\")))))\r\n  val statement: Stream[IO, Unit] = Stream.eval(IO(if (56 > 0) println(100) else println(0)))\r\n  val cronScheduler = Cron4sScheduler.systemDefault[IO]\r\n  val everyMinute = Cron.unsafeParse(\"1 * * ? * *\")\r\n  val every20Secs = Cron.unsafeParse(\"*/20 * * ? * *\")\r\n  val tasks = cronScheduler.schedule(List(every20Secs -> printTime, every20Secs -> statement))\r\n\r\n  def convertBytesToHex(bytes: Array[Byte]): String = {\r\n    val sb = new StringBuilder\r\n    for (b <- bytes) {\r\n      sb.append(String.format(\"%02x\", Byte.box(b)))\r\n    }\r\n    sb.toString\r\n  }\r\n\r\n  //    val loginJson = parse(\"\"\"[\"\", \"\", 2,\"0.0.3\", 3],[\"76561198077238939\", \"110000106f8de9b\", 256, 0]\"\"\")\r\n\r\n  val loginRequest = POST(\r\n    UrlForm(\r\n      \"data\" -> \"dd00000002dd00000005a0a002a5302e302e3303dd00000004b13736353631313938303737323338393339af313130303030313036663864653962cd010000\"\r\n    ),\r\n    uri\"https://dbf.channel.or.jp/api/user/login\"\r\n  )\r\n\r\n  override def run: IO[Unit] = {\r\n\r\n    val response = httpClient.expect[Array[Byte]](loginRequest).unsafeRunSync()\r\n    val unpacked = MsgPack.unpack(response).toString\r\n    println(unpacked)\r\n\r\n    val test = pack(\"test\")\r\n    println(unpack[String](DatatypeConverter.parseHexBinary(convertBytesToHex(test))))\r\n    IO.unit\r\n  }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/scala/Main.scala b/src/main/scala/Main.scala
+--- a/src/main/scala/Main.scala	(revision cf553459775d2566653353ef223380456988522f)
++++ b/src/main/scala/Main.scala	(date 1668706520245)
+@@ -2,6 +2,7 @@
+ 
+ import cats.effect._
+ import cats.effect.unsafe.implicits.global
++import eu.timepit.fs2cron.cron4s.Cron4sScheduler
+ import cron4s.Cron
+ import eu.timepit.fs2cron.cron4s.Cron4sScheduler
+ import fs2.Stream
+@@ -14,6 +15,8 @@
+ import org.velvia.MsgPack
+ import org.velvia.msgpack.RawStringCodecs.StringCodec
+ import org.velvia.msgpack._
++import org.json4s._
++import org.json4s.jackson.JsonMethods._
+ 
+ import java.time.LocalDateTime
+ import java.time.format.DateTimeFormatter
+@@ -22,11 +25,6 @@
+ object Main extends IOApp.Simple {
+   val httpClient: Client[IO] = JavaNetClientBuilder[IO].create
+   val printTime: Stream[IO, Unit] = Stream.eval(IO(println("Hello world! The time is: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))))
+-  val statement: Stream[IO, Unit] = Stream.eval(IO(if (56 > 0) println(100) else println(0)))
+-  val cronScheduler = Cron4sScheduler.systemDefault[IO]
+-  val everyMinute = Cron.unsafeParse("1 * * ? * *")
+-  val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
+-  val tasks = cronScheduler.schedule(List(every20Secs -> printTime, every20Secs -> statement))
+ 
+   def convertBytesToHex(bytes: Array[Byte]): String = {
+     val sb = new StringBuilder
+@@ -36,7 +34,9 @@
+     sb.toString
+   }
+ 
+-  //    val loginJson = parse("""["", "", 2,"0.0.3", 3],["76561198077238939", "110000106f8de9b", 256, 0]""")
++  val loginJson = parse("""["", "", 2,"0.0.3", 3],["76561198077238939", "110000106f8de9b", 256, 0]""")
++  println(loginJson(1))
++//      val loginJson = parse("""{"foo":"bar"}""")
+ 
+   val loginRequest = POST(
+     UrlForm(
+@@ -46,6 +46,9 @@
+   )
+ 
+   override def run: IO[Unit] = {
++    val cronScheduler = Cron4sScheduler.systemDefault[IO]
++    val every20Secs = Cron.unsafeParse("*/20 * * ? * *")
++//    val scheduled = cronScheduler.awakeEvery(every20Secs) >> printTime
+ 
+     val response = httpClient.expect[Array[Byte]](loginRequest).unsafeRunSync()
+     val unpacked = MsgPack.unpack(response).toString
+@@ -53,6 +56,7 @@
+ 
+     val test = pack("test")
+     println(unpack[String](DatatypeConverter.parseHexBinary(convertBytesToHex(test))))
++//    IO(scheduled.attempt.compile.drain.unsafeRunSync())
+     IO.unit
+   }
+ }
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"8fda124a-1efb-49c9-a191-6f1953241860\" name=\"Changes\" comment=\"Updated gitignore\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_scala_library_2_13_10_jar.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/build.sbt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/build.sbt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/scala/Main.scala\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/scala/Main.scala\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"CodeStyleSettingsInfer\">\r\n    <option name=\"done\" value=\"true\" />\r\n  </component>\r\n  <component name=\"ExternalProjectsData\">\r\n    <projectState path=\"$PROJECT_DIR$\">\r\n      <ProjectState />\r\n    </projectState>\r\n  </component>\r\n  <component name=\"ExternalProjectsManager\">\r\n    <system id=\"SBT\">\r\n      <state>\r\n        <projects_view>\r\n          <tree_state>\r\n            <expand>\r\n              <path>\r\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\r\n                <item name=\"powerlevel-dbfz-scala\" type=\"f1a62948:ProjectNode\" />\r\n              </path>\r\n              <path>\r\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\r\n                <item name=\"powerlevel-dbfz-scala\" type=\"f1a62948:ProjectNode\" />\r\n                <item name=\"powerlevel-dbfz-scala\" type=\"2d1252cf:ModuleNode\" />\r\n              </path>\r\n              <path>\r\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\r\n                <item name=\"powerlevel-dbfz-scala\" type=\"f1a62948:ProjectNode\" />\r\n                <item name=\"powerlevel-dbfz-scala\" type=\"2d1252cf:ModuleNode\" />\r\n                <item name=\"sbt settings\" type=\"ee584324:SbtViewContributor$SbtSettingsGroupNode\" />\r\n              </path>\r\n            </expand>\r\n            <select />\r\n          </tree_state>\r\n        </projects_view>\r\n      </state>\r\n    </system>\r\n  </component>\r\n  <component name=\"Git.Rebase.Settings\">\r\n    <option name=\"NEW_BASE\" value=\"master\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <excluded-from-favorite>\r\n      <branch-storage>\r\n        <map>\r\n          <entry type=\"LOCAL\">\r\n            <value>\r\n              <list>\r\n                <branch-info repo=\"$PROJECT_DIR$\" source=\"master\" />\r\n              </list>\r\n            </value>\r\n          </entry>\r\n          <entry type=\"REMOTE\">\r\n            <value>\r\n              <list>\r\n                <branch-info repo=\"$PROJECT_DIR$\" source=\"origin/master\" />\r\n              </list>\r\n            </value>\r\n          </entry>\r\n        </map>\r\n      </branch-storage>\r\n    </excluded-from-favorite>\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"master\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitRewordedCommitMessages\">\r\n    <option name=\"commitMessagesMapping\">\r\n      <RewordedCommitMessageMapping>\r\n        <option name=\"originalMessage\" value=\"First commit\" />\r\n        <option name=\"rewordedMessage\" value=\"Updated gitignore&#10;&#10;&#10;First commit&#10;&#10;&#10;First commit\" />\r\n      </RewordedCommitMessageMapping>\r\n    </option>\r\n    <option name=\"currentCommit\" value=\"1\" />\r\n    <option name=\"onto\" value=\"80dd0f9d27f5fe0f5994a70ab4332705054b7c54\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectCodeStyleSettingsMigration\">\r\n    <option name=\"version\" value=\"2\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2HXqRdMzNBk4BBbi8Zg5p5ekT2e\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ASKED_ADD_EXTERNAL_FILES\": \"true\",\r\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\r\n    \"project.structure.last.edited\": \"Project\",\r\n    \"project.structure.proportion\": \"0.0\",\r\n    \"project.structure.side.proportion\": \"0.2\",\r\n    \"settings.editor.selected.configurable\": \"preferences.pluginManager\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"Main\" type=\"Application\" factoryName=\"Application\" temporary=\"true\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"org.powerlevel.Main\" />\r\n      <module name=\"powerlevel-dbfz-scala\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"org.powerlevel.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Application.Main\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"8fda124a-1efb-49c9-a191-6f1953241860\" name=\"Changes\" comment=\"\" />\r\n      <created>1668441769232</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1668441769232</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"First commit\">\r\n      <created>1668442383114</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1668442383114</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"First commit\">\r\n      <created>1668442739145</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1668442739145</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Updated gitignore\">\r\n      <created>1668443026125</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1668443026125</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"4\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"FILTERS\">\r\n                <map>\r\n                  <entry key=\"branch\">\r\n                    <value>\r\n                      <list>\r\n                        <option value=\"HEAD\" />\r\n                      </list>\r\n                    </value>\r\n                  </entry>\r\n                </map>\r\n              </option>\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"First commit\" />\r\n    <MESSAGE value=\"Updated gitignore\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Updated gitignore\" />\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision cf553459775d2566653353ef223380456988522f)
++++ b/.idea/workspace.xml	(date 1668706687028)
+@@ -4,9 +4,7 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="Updated gitignore">
+-      <change beforePath="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_scala_library_2_13_10_jar.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" afterDir="false" />
++    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="Added MsgPack decoding from POST response from LOGIN API">
+       <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
+@@ -166,7 +164,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1668443026125</updated>
+     </task>
+-    <option name="localTasksCounter" value="4" />
++    <task id="LOCAL-00004" summary="Added MsgPack decoding from POST response from LOGIN API">
++      <created>1668693058753</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1668693058753</updated>
++    </task>
++    <option name="localTasksCounter" value="5" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -193,9 +198,12 @@
+     </option>
+   </component>
+   <component name="VcsManagerConfiguration">
++    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
++    <option name="CHECK_NEW_TODO" value="false" />
+     <MESSAGE value="First commit" />
+     <MESSAGE value="Updated gitignore" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Updated gitignore" />
++    <MESSAGE value="Added MsgPack decoding from POST response from LOGIN API" />
++    <option name="LAST_COMMIT_MESSAGE" value="Added MsgPack decoding from POST response from LOGIN API" />
+   </component>
+   <component name="XSLT-Support.FileAssociations.UIState">
+     <expand />
+Index: .idea/modules/powerlevel-dbfz-scala.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module external.linked.project.id=\"root [file:/C:/Users/Shahi/IdeaProjects/powerlevel-dbfz-scala/]\" external.linked.project.path=\"$MODULE_DIR$/../..\" external.root.project.path=\"$MODULE_DIR$/../..\" external.system.id=\"SBT\" type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" LANGUAGE_LEVEL=\"JDK_1_8\">\r\n    <output url=\"file://$MODULE_DIR$/../../target/scala-2.12/classes\" />\r\n    <output-test url=\"file://$MODULE_DIR$/../../target/scala-2.12/test-classes\" />\r\n    <exclude-output />\r\n    <content url=\"file://$MODULE_DIR$/../..\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/../../src/main/scala\" isTestSource=\"false\" packagePrefix=\"org.powerlevel\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/../../src/test/scala\" isTestSource=\"true\" packagePrefix=\"org.powerlevel\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/../../target\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/../../project/target\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/../../null/Coursier/cache/v1\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" name=\"sbt: co.fs2:fs2-core_2.12:3.2.7:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: co.fs2:fs2-io_2.12:3.2.4:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.chuusai:shapeless_2.12:2.3.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.comcast:ip4s-core_2.12:3.1.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.fasterxml.jackson.core:jackson-annotations:2.8.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.fasterxml.jackson.core:jackson-core:2.8.4:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.fasterxml.jackson.core:jackson-databind:2.8.4:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.github.alonsodomin.cron4s:cron4s-core_2.12:0.6.1:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.github.eikek:calev-core_2.12:0.6.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.code.findbugs:jsr305:3.0.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.code.gson:gson:2.8.6:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.errorprone:error_prone_annotations:2.3.4:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.guava:failureaccess:1.0.1:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.guava:guava:29.0-android:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.j2objc:j2objc-annotations:1.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.protobuf:protobuf-java-util:4.0.0-rc-2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.google.protobuf:protobuf-java:4.0.0-rc-2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.thoughtworks.paranamer:paranamer:2.8:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: com.twitter:hpack:1.0.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: eu.timepit:fs2-cron-calev_2.12:0.7.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: eu.timepit:fs2-cron-core_2.12:0.7.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: eu.timepit:fs2-cron-cron4s_2.12:0.7.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: io.circe:circe-core_2.12:0.14.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: io.circe:circe-generic_2.12:0.14.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: io.circe:circe-jawn_2.12:0.14.1:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: io.circe:circe-literal_2.12:0.14.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: io.circe:circe-numbers_2.12:0.14.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.checkerframework:checker-compat-qual:2.5.5:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:blaze-core_2.12:0.15.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:blaze-http_2.12:0.15.3:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-blaze-client_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-blaze-core_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-blaze-server_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-circe_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-client_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-core_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-crypto_2.12:0.2.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-dsl_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-ember-client_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-ember-core_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-ember-server_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-jawn_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.http4s:http4s-server_2.12:0.23.10:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.json4s:json4s-ast_2.12:3.5.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.json4s:json4s-core_2.12:3.5.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.json4s:json4s-jackson_2.12:3.5.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.json4s:json4s-native_2.12:3.5.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.json4s:json4s-scalap_2.12:3.5.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.log4s:log4s_2.12:1.10.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.scala-lang.modules:scala-xml_2.12:1.0.6:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.scala-lang:scala-library:2.12.17:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.scodec:scodec-bits_2.12:1.1.30:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.slf4j:slf4j-api:1.7.35:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:case-insensitive_2.12:1.2.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-core_2.12:2.9.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-effect-kernel_2.12:3.4.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-effect-std_2.12:3.4.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-effect_2.12:3.4.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-kernel_2.12:2.9.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:cats-parse_2.12:0.3.6:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:jawn-fs2_2.12:2.2.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:jawn-parser_2.12:1.3.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:keypool_2.12:0.4.7:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:literally_2.12:1.0.2:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:log4cats-core_2.12:2.2.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:log4cats-slf4j_2.12:2.2.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.typelevel:vault_2.12:3.1.0:jar\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"sbt: org.velvia:msgpack4s_2.12:0.6.0:jar\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules/powerlevel-dbfz-scala.iml b/.idea/modules/powerlevel-dbfz-scala.iml
+--- a/.idea/modules/powerlevel-dbfz-scala.iml	(revision cf553459775d2566653353ef223380456988522f)
++++ b/.idea/modules/powerlevel-dbfz-scala.iml	(date 1668706650749)
+@@ -21,7 +21,6 @@
+     <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-core:2.8.4:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-databind:2.8.4:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.github.alonsodomin.cron4s:cron4s-core_2.12:0.6.1:jar" level="project" />
+-    <orderEntry type="library" name="sbt: com.github.eikek:calev-core_2.12:0.6.3:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.google.code.findbugs:jsr305:3.0.2:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.google.code.gson:gson:2.8.6:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.google.errorprone:error_prone_annotations:2.3.4:jar" level="project" />
+@@ -33,7 +32,6 @@
+     <orderEntry type="library" name="sbt: com.google.protobuf:protobuf-java:4.0.0-rc-2:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.thoughtworks.paranamer:paranamer:2.8:jar" level="project" />
+     <orderEntry type="library" name="sbt: com.twitter:hpack:1.0.2:jar" level="project" />
+-    <orderEntry type="library" name="sbt: eu.timepit:fs2-cron-calev_2.12:0.7.2:jar" level="project" />
+     <orderEntry type="library" name="sbt: eu.timepit:fs2-cron-core_2.12:0.7.2:jar" level="project" />
+     <orderEntry type="library" name="sbt: eu.timepit:fs2-cron-cron4s_2.12:0.7.2:jar" level="project" />
+     <orderEntry type="library" name="sbt: io.circe:circe-core_2.12:0.14.3:jar" level="project" />
