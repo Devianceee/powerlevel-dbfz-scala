@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % "3.4.0",
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
+  "io.circe" %% "circe-generic" % "0.14.3",
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.wvlet.airframe" %% "airframe-msgpack" % "22.11.1",

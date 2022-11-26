@@ -11,6 +11,9 @@ import doobie.util.ExecutionContexts
 case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
+
+case class Player(uniquePlayerID: String, name: String)
+
 object Database {
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
@@ -62,18 +65,40 @@ object Database {
     }
   }
 
+  def getUsersWithSimilarName(name: String): IO[List[(String, String)]] = {
+  // TODO case class for mapping
+    val f1 = fr"select unique_player_id, player_name from players"
+    val f2 = fr"where lower(player_name)"
+    val f3 = fr"like $name"
+
+    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)]// TODO case class for mapping
+    getUsers.to[List].transact(xa)
+  }
+
+  def getUserGames(user_id: Long): IO[List[(String, String)]] = {
+    // TODO case class for mapping
+    val f1 = fr"select unique_match_id, match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
+    val f2 = fr"where winner_id = $user_id or loser_id = $user_id"
+    val f3 = fr"order by match_time desc"
+
+    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)] // TODO case class for mapping
+    getUsers.to[List].transact(xa)
+  }
+
 //  def findPlayerByName(s: String) // SQL query to get players
 // (select * from players where player_name like '%Deviance%';) and map to case class for all their games
 
 
-  def writeToDB(replayResults:IO[List[ReplayResults]]) = {
-
-    replayResults.flatMap { result =>
+  def writeToDB(replayResults:IO[List[ReplayResults]]): IO[List[Any]] = {
+//    println("Write to DB")
+    val results = replayResults.flatMap { result =>
       result.traverse { details =>
         saveResult(details)
       }
 //      _ = println(Utils.timeNow + ": Finished writing to DB!")
     }
+    IO.println(Utils.timeNow + ": Finished writing to DB!")
+    results
   }
 
 }

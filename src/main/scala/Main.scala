@@ -1,29 +1,20 @@
 package org.powerlevel
 
-import cats.effect.IO.executionContext
 import cats.effect.unsafe.implicits.global
-import cats.effect.{IO, _}
-import cats.implicits.catsSyntaxTuple2Parallel
-
-import scala.concurrent.ExecutionContext
+import cats.effect._
+import cats.implicits._
 import com.comcast.ip4s._
-import cron4s.Cron
-import eu.timepit.fs2cron.cron4s.Cron4sScheduler
-import fs2.Stream
-import fs2.concurrent.SignallingRef
-import org.http4s.EntityDecoder.byteArrayDecoder
-import org.http4s.Method.POST
-import org.http4s.UrlForm
-import org.http4s.client.dsl.io._
-import org.http4s.client.{Client, JavaNetClientBuilder}
+import io.circe.Decoder
+import io.circe.Encoder._
+import io.circe.generic.auto.exportEncoder
+import io.circe.generic.semiauto.deriveDecoder
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.ember.server._
 import org.http4s.implicits._
-import org.http4s.server.{Router, Server}
 
-import scala.concurrent.duration.DurationInt
-//import org.powerlevel.Main.loginTimestamp
-import cats.effect._
+import scala.util.Try
 import org.http4s._
+import org.http4s.circe.jsonOf
 import org.http4s.dsl.io._
 
 object Main extends IOApp.Simple {
@@ -31,28 +22,63 @@ object Main extends IOApp.Simple {
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
-  val numberOfMatchesQueried = 1000 // better to do this via .conf file or some other environment way
-  def replayResponseRank: IO[List[Any]] = Database.writeToDB(for {
-    r1 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 11))
-    r2 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 501))
-    r3 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 1001))
-    r4 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 1501))
-    r5 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 2001))
-    r6 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 2501))
-    r7 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 3001))
-    r8 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 3501))
-    r9 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 4001))
-    r10 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 4501))
-    r11 <- Utils.parseReplays(Requests.replayRequest(0, numberOfMatchesQueried, 5001))
-  } yield r1 ++ r2 ++ r3 ++ r4 ++ r5 ++ r6 ++ r7 ++ r8 ++ r9 ++ r10 ++ r11)
+  val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
 
-  lazy val loopRequest: IO[Any] = replayResponseRank >> IO.println(Thread.currentThread().getName + " - Request Finished!") >> IO.sleep(2.seconds) >> loopRequest
+  def getReplaySingle(timestamp:String, fromRank: Int) = Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestamp, 0, numberOfMatchesQueried, fromRank)))
+//  def getUser(name: String) = Database.getUsersWithSimilarName(name) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for User $name! Completed at: ${Utils.timeNow}")
+  def replays(timestamp: String, fromRank: Int): IO[Unit] = getReplaySingle(timestamp, fromRank) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for Rank $fromRank! Completed at: ${Utils.timeNow}")
+
+  implicit class dbPrinter[A](io: IO[A]) {
+    def dbPrint: IO[A] = io.map{ a =>
+      println(s"$a")
+      a
+    }
+  }
+//  val helloTest: IO[Unit] = IO(println("Hello")) >> IO.println(s"${Thread.currentThread().getName} - Request Finished! Completed at: ${Utils.timeNow}") >> IO.sleep(2.seconds) >> helloTest
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
+  object FindGameViaName {
+    def unapply(str: String): Option[String] = {
+      if (!str.isEmpty)
+        Try(str).toOption
+      else
+        None
+    }
+  }
+
+
   val helloWorldService = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name =>
-      Ok(s"Hello, $name.")
+      Ok(s"Hello, $name. Time now is ${Utils.timeNow}")
+
+    case GET -> Root / "getReplays" => { // cron job via curl
+      val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
+      println(reqTimestamp)
+      replays(reqTimestamp, 11).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 1001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 1501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 2001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 2501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 3001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 3501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 4001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 4501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 5001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 5501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 6001).unsafeRunAsync (_ => ()) // async calls to get replays all in one go in parallel
+
+      Ok(s"Request sent at: ${Utils.timeNow}")
+
+    }
+
+    case GET -> Root / "name" / FindGameViaName(name) =>
+      Ok(Database.getUsersWithSimilarName(s"%$name%"))
+
+    case _ -> Root =>
+      Ok("Error")
+
   }.orNotFound
 
   val server: IO[Unit] = EmberServerBuilder
@@ -68,6 +94,6 @@ object Main extends IOApp.Simple {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
-    (loopRequest, server).parMapN { (_, _) => ()}
+    server
   }
 }

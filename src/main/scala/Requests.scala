@@ -10,6 +10,8 @@ import org.http4s.ember.client._
 import org.http4s.implicits.http4sLiteralsSyntax
 import play.api.libs.json.{JsValue, Json}
 
+import scala.concurrent.duration.DurationInt
+
 
 
 object Requests {
@@ -30,11 +32,12 @@ object Requests {
     foo
   }
 
-  def replayRequest(replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
-    var time = Requests.getLoginTimeStamp.unsafeRunSync()
-    if (time.length < 6) {
-      time = Requests.getLoginTimeStamp.unsafeRunSync()
-    }
+  def replayRequest(time: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
+//    val time = Requests.getLoginTimeStamp.unsafeRunSync()
+
+//    if (time.length < 6) {
+//      time = Requests.getLoginTimeStamp.unsafeRunSync()
+//    }
 
     val replayJson = s"""[
                         |    [
