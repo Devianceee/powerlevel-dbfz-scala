@@ -10,14 +10,14 @@ import org.http4s.ember.client._
 import org.http4s.implicits.http4sLiteralsSyntax
 import play.api.libs.json.{JsValue, Json}
 
-case class ReplayResults(uniqueMatchID: Long, matchTime: String,
-                         winnerID: Long, winnerName: String, winnerCharacters: List[String],
-                         loserID: Long, loserName: String, loserCharacters: List[String])
+import scala.concurrent.duration.DurationInt
+
+
 
 object Requests {
 
   private def loginRequest(): IO[String] = {
-    val loginJson = """[["", "", 2,"0.0.3", 3],["76561198077238939", "110000106f8de9b", 256, 0]]"""
+    val loginJson = """[["", "", 2,"0.0.3", 3],["76561199056721807", "1100001415a978f", 256, 0]]"""
     val postRequest = POST (UrlForm("data" -> Utils.packJson(loginJson)), uri"https://dbf.channel.or.jp/api/user/login")
     val client = EmberClientBuilder.default[IO].build.use { client =>
       client.expect[Array[Byte]](postRequest)
@@ -32,11 +32,17 @@ object Requests {
     foo
   }
 
-  def replayRequest(timestamp: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
+  def replayRequest(time: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
+//    val time = Requests.getLoginTimeStamp.unsafeRunSync()
+
+//    if (time.length < 6) {
+//      time = Requests.getLoginTimeStamp.unsafeRunSync()
+//    }
+
     val replayJson = s"""[
                         |    [
-                        |        "180205073302944623",
-                        |        "$timestamp",
+                        |        "221127003353744044",
+                        |        "$time",
                         |        2,
                         |        "0.0.3",
                         |        3
@@ -49,7 +55,7 @@ object Requests {
                         |        [
                         |            28,
                         |            $character,
-                        |            102,
+                        |            104,
                         |            $fromRank,
                         |            -1,
                         |            [
@@ -69,9 +75,9 @@ object Requests {
 
   def getLoginTimeStamp: IO[String] = {
     val jsonList: IO[String] = for {
-      _ <- IO.pure(println("Getting Login Timestamp..."))
+//      _ <- IO.pure(println("Getting Login Timestamp..."))
       request <- getJson(loginRequest())
-      _ = println("Obtained Login Timestamp!")
+//      _ = println("Obtained Login Timestamp!")
     } yield request.replace("\"", "")
     jsonList
   }
