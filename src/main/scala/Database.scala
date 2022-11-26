@@ -71,18 +71,18 @@ object Database {
     val f2 = fr"where lower(player_name)"
     val f3 = fr"like $name"
 
-    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)]// TODO case class for mapping
+    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)]
     getUsers.to[List].transact(xa)
   }
 
-  def getUserGames(user_id: Long): IO[List[(String, String)]] = {
+  def getUserGames(user_id: Long) = {
     // TODO case class for mapping
     val f1 = fr"select unique_match_id, match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
-    val f2 = fr"where winner_id = $user_id or loser_id = $user_id"
+    val f2 = fr"where winner_id = ${user_id} or loser_id = ${user_id}"
     val f3 = fr"order by match_time desc"
-
-    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)] // TODO case class for mapping
-    getUsers.to[List].transact(xa)
+    println (f1 ++ f2 ++ f3)
+    val getGames = (f1 ++ f2 ++ f3).query[(String, String, String, List[String], String, List[String])]
+    getGames.to[List].transact(xa)
   }
 
 //  def findPlayerByName(s: String) // SQL query to get players

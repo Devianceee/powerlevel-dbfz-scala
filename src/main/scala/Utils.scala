@@ -50,7 +50,7 @@ object Utils {
 
     val jsonList: IO[JsValue] = for {
       parse <- response
-      _ = println(parse)
+//      _ = println(parse)
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
     /*

@@ -22,7 +22,7 @@ object Main extends IOApp.Simple {
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
-  val numberOfMatchesQueried = 200 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
 
   def getReplaySingle(timestamp:String, fromRank: Int) = Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestamp, 0, numberOfMatchesQueried, fromRank)))
 //  def getUser(name: String) = Database.getUsersWithSimilarName(name) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for User $name! Completed at: ${Utils.timeNow}")
@@ -67,14 +67,48 @@ object Main extends IOApp.Simple {
       replays(reqTimestamp, 4501).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 5001).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 5501).unsafeRunAsync (_ => ())
-      replays(reqTimestamp, 6001).unsafeRunAsync (_ => ()) // async calls to get replays all in one go in parallel
+      replays(reqTimestamp, 6001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 6501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 7001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 7501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 8001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 8501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 9001).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 9501).unsafeRunAsync (_ => ())
+      replays(reqTimestamp, 10001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 10501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 11001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 11501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 12001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 12501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 13001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 13501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 14001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 14501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 15001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 15501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 16001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 16501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 17001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 17501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 18001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 18501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 19001).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 19501).unsafeRunAsync(_ => ())
+//      replays(reqTimestamp, 20001).unsafeRunAsync(_ => ())
+
+
+      // async calls to get replays all in one go in parallel
 
       Ok(s"Request sent at: ${Utils.timeNow}")
 
     }
 
-    case GET -> Root / "name" / FindGameViaName(name) =>
+    case GET -> Root / "name" / name =>
       Ok(Database.getUsersWithSimilarName(s"%$name%"))
+
+    case GET -> Root / "playerid" / player_id =>
+      Ok(Database.getUserGames(player_id.toLong))
 
     case _ -> Root =>
       Ok("Error")
@@ -84,7 +118,7 @@ object Main extends IOApp.Simple {
   val server: IO[Unit] = EmberServerBuilder
     .default[IO]
     .withHost(ipv4"0.0.0.0")
-    .withPort(port"8000")
+    .withPort(port"7000")
     .withHttpApp(helloWorldService)
     .build
     .use(_ => IO.never)
