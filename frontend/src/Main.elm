@@ -2,55 +2,45 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (style)
-import Html.Events exposing (..)
 import Http
-import Json.Decode exposing (Decoder, field, int, list, map4, map5, string)
-
-
+import Json.Decode exposing (Decoder, list)
+import Json.Decode as Decode exposing (Decoder)
 
 -- MAIN
 
-
 main =
   Browser.element
-    { init = init
-    , update = update
-    , subscriptions = subscriptions
-    , view = view
+    { init = init,
+    update = update,
+    subscriptions = subscriptions,
+    view = view
     }
 
-
-
 -- MODEL
-
 
 type Model
   = Failure
   | Loading
-  | Success PlayerGames
+  | Success (List PlayerGames)
 
 
 type alias PlayerGames =
-  { matchTime : String
-  , winnerName : String
-  , winnerCharacters : List(String)
-  , loserName : String
-  , loserCharacters : List(String)
+  {
+      matchTime : String,
+      winnerName : String,
+      winnerCharacters : List(String),
+      loserName : String,
+      loserCharacters : List(String)
   }
-
 
 init : () -> (Model, Cmd Msg)
 init _ =
   (Loading, getPlayerGames)
 
-
-
 -- UPDATE
 
-
 type Msg
-  = GotPlayerGames (Result Http.Error PlayerGames)
+  = GotPlayerGames (Result Http.Error (List PlayerGames))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -64,19 +54,13 @@ update msg model =
         Err _ ->
           (Failure, Cmd.none)
 
-
-
 -- SUBSCRIPTIONS
-
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
-
 -- VIEW
-
 
 view : Model -> Html Msg
 view model =
@@ -84,7 +68,6 @@ view model =
     [ h2 [] [ text "Player Games" ]
     , viewPlayerGames model
     ]
-
 
 viewPlayerGames : Model -> Html Msg
 viewPlayerGames model =
@@ -98,31 +81,28 @@ viewPlayerGames model =
       text "Loading..."
 
     Success games ->
-      div []
-        [
-        blockquote [] [ text games.winnerName ]
-        , p [ style "text-align" "right" ]
-            [ text "— " ]
-        ]
-
-
+      p [] [text games]
 
 -- HTTP
-
 
 getPlayerGames : Cmd Msg
 getPlayerGames =
   Http.get
     { url = "/playerid/180905221050371465"
-    , expect = Http.expectJson GotPlayerGames playerGamesDecoder
+    , expect = Http.expectJson GotPlayerGames allGamesDecoder
     }
-
+-- https://stackoverflow.com/questions/35028430/how-to-extract-the-results-of-http-requests-in-elm
 
 playerGamesDecoder : Decoder PlayerGames
 playerGamesDecoder =
-  map5 PlayerGames
-    (field "matchTime" string)
-    (field "winnerName" string)
-    (field "winnerCharacters" (list string))
-    (field "loserName" string)
-    (field "loserCharacters" (list string))
+  Decode.map5 PlayerGames
+    (Decode.field "matchTime" Decode.string)
+    (Decode.field "winnerName" Decode.string)
+    (Decode.field "winnerCharacters" (Decode.list Decode.string))
+    (Decode.field "loserName" Decode.string)
+    (Decode.field "loserCharacters" (Decode.list Decode.string))
+
+
+allGamesDecoder : Decoder (List PlayerGames)
+allGamesDecoder =
+    list playerGamesDecoder

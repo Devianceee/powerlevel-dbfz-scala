@@ -43,6 +43,7 @@ object Utils {
       listOfPlayers.map {player =>
         player.asJson
       }
+      listOfPlayers.asJson
     }
   }
 
@@ -58,6 +59,7 @@ object Utils {
       listOfGames.map { game =>
         game.asJson
       }
+      listOfGames.asJson
     }
   }
 

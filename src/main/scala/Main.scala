@@ -5,22 +5,15 @@ import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import com.comcast.ip4s._
 import io.circe.Encoder._
-import io.circe.Json
 import org.http4s._
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.dsl.io._
 import org.http4s.ember.server._
 //import play.api.libs.json._
-import org.http4s.implicits._
 import fs2.io.file.Path
+import org.http4s.implicits._
 
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
-
-import scala.util.Try
-
-object Main extends IOApp.Simple {
+object Main extends IOApp {
 
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
@@ -35,14 +28,12 @@ object Main extends IOApp.Simple {
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
-  val getRoot = Request[IO](Method.GET, uri"/")
-
   val routes = HttpRoutes.of[IO] {
 
     case GET -> Root / "test" =>
       Ok(s"Hello. Time now is ${Utils.timeNow}")
 
-    case request @ GET -> Root / "index.html" =>
+    case request @ GET -> Root =>
       StaticFile.fromPath(Path("frontend/index.html"), Some(request))
         .getOrElseF(NotFound()) // In case the file doesn't exist
 
@@ -75,7 +66,7 @@ object Main extends IOApp.Simple {
 
       Ok(s"Request sent at: ${Utils.timeNow}")
 
-    case GET -> Root :? playerName(name) =>
+    case GET -> Root / "search" :? playerName(name) =>
       Ok(Utils.searchPlayer(s"%$name%"))
 
     case GET -> Root / "playerid" / player_id =>
@@ -88,16 +79,16 @@ object Main extends IOApp.Simple {
 
   }.orNotFound
 
-  val server: IO[Unit] = EmberServerBuilder
+  val server = EmberServerBuilder
     .default[IO]
     .withHost(ipv4"0.0.0.0")
     .withPort(port"7000")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)
-    .as(IO.unit)
+    .as(ExitCode.Success)
 
-  override def run: IO[Unit] = {
+  override def run(args: List[String]): IO[ExitCode] = {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
