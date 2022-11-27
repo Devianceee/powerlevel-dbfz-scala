@@ -6,6 +6,11 @@ import wvlet.airframe.msgpack.spi.MessagePack
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import scala.collection.immutable.::
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+
 
 object Utils {
 
@@ -15,12 +20,44 @@ object Utils {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
   }
 
+  def epochToTime(epoch: String): String = {
+    LocalDateTime.ofEpochSecond(epoch.toLong, 0, ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+  }
+
   def jpTimeParse(matchTime: String): String = {
     val formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss")
 
     val jpTime = LocalDateTime.parse(matchTime, formatter).atZone(ZoneId.of("Asia/Tokyo"))
     val currentTime = jpTime.toOffsetDateTime.withOffsetSameInstant(ZonedDateTime.now().getOffset).format(DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss"))
     currentTime
+  }
+
+  def searchPlayer(name: String) = {
+    val players = Database.searchPlayer(name).map { players =>
+      players.map { player =>
+        Player(player._1, player._2)
+      }
+    }
+
+    players.map { listOfPlayers =>
+      listOfPlayers.map {player =>
+        player.asJson
+      }
+    }
+  }
+
+  def getPlayerGames(player_id: Long) = {
+    val games = Database.getPlayerGames(player_id).map { games =>
+      games.map { game =>
+        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5)
+      }
+    }
+
+    games.map { listOfGames =>
+      listOfGames.map { game =>
+        game.asJson
+      }
+    }
   }
 
   def convertBytesToHex(bytes: Array[Byte]): String = {

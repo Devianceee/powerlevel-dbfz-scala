@@ -8,11 +8,19 @@ import doobie.util.transactor.Transactor
 import doobie.util.transactor.Transactor._
 import doobie.util.ExecutionContexts
 
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+
 case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
 case class Player(uniquePlayerID: String, name: String)
+
+case class PlayerGames(matchTime: String,
+                       winnerName: String, winnerCharacters: List[String],
+                       loserName: String, loserCharacters: List[String])
 
 object Database {
 
@@ -65,7 +73,7 @@ object Database {
     }
   }
 
-  def getUsersWithSimilarName(name: String): IO[List[(String, String)]] = {
+  def searchPlayer(name: String): IO[List[(String, String)]] = {
   // TODO case class for mapping
     val f1 = fr"select unique_player_id, player_name from players"
     val f2 = fr"where lower(player_name)"
@@ -75,13 +83,13 @@ object Database {
     getUsers.to[List].transact(xa)
   }
 
-  def getUserGames(user_id: Long) = {
+  def getPlayerGames(user_id: Long) = {
     // TODO case class for mapping
-    val f1 = fr"select unique_match_id, match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
+    val f1 = fr"select match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
     val f2 = fr"where winner_id = ${user_id} or loser_id = ${user_id}"
     val f3 = fr"order by match_time desc"
-    println (f1 ++ f2 ++ f3)
-    val getGames = (f1 ++ f2 ++ f3).query[(String, String, String, List[String], String, List[String])]
+
+    val getGames = (f1 ++ f2 ++ f3).query[(String, String, List[String], String, List[String])]
     getGames.to[List].transact(xa)
   }
 

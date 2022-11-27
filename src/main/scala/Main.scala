@@ -1,21 +1,23 @@
 package org.powerlevel
 
-import cats.effect.unsafe.implicits.global
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import com.comcast.ip4s._
-import io.circe.Decoder
 import io.circe.Encoder._
-import io.circe.generic.auto.exportEncoder
-import io.circe.generic.semiauto.deriveDecoder
+import io.circe.Json
+import org.http4s._
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+import org.http4s.dsl.io._
 import org.http4s.ember.server._
+//import play.api.libs.json._
 import org.http4s.implicits._
 
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+
 import scala.util.Try
-import org.http4s._
-import org.http4s.circe.jsonOf
-import org.http4s.dsl.io._
 
 object Main extends IOApp.Simple {
 
@@ -28,31 +30,17 @@ object Main extends IOApp.Simple {
 //  def getUser(name: String) = Database.getUsersWithSimilarName(name) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for User $name! Completed at: ${Utils.timeNow}")
   def replays(timestamp: String, fromRank: Int): IO[Unit] = getReplaySingle(timestamp, fromRank) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for Rank $fromRank! Completed at: ${Utils.timeNow}")
 
-  implicit class dbPrinter[A](io: IO[A]) {
-    def dbPrint: IO[A] = io.map{ a =>
-      println(s"$a")
-      a
-    }
-  }
 //  val helloTest: IO[Unit] = IO(println("Hello")) >> IO.println(s"${Thread.currentThread().getName} - Request Finished! Completed at: ${Utils.timeNow}") >> IO.sleep(2.seconds) >> helloTest
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
-  object FindGameViaName {
-    def unapply(str: String): Option[String] = {
-      if (!str.isEmpty)
-        Try(str).toOption
-      else
-        None
-    }
-  }
+  val getRoot = Request[IO](Method.GET, uri"/")
 
-
-  val helloWorldService = HttpRoutes.of[IO] {
+  val routes = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name =>
       Ok(s"Hello, $name. Time now is ${Utils.timeNow}")
 
-    case GET -> Root / "getReplays" => { // cron job via curl
+    case GET -> Root / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
       println(reqTimestamp)
       replays(reqTimestamp, 11).unsafeRunAsync (_ => ())
@@ -76,41 +64,39 @@ object Main extends IOApp.Simple {
       replays(reqTimestamp, 9001).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 9501).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 10001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 10501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 11001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 11501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 12001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 12501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 13001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 13501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 14001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 14501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 15001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 15501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 16001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 16501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 17001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 17501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 18001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 18501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 19001).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 19501).unsafeRunAsync(_ => ())
-//      replays(reqTimestamp, 20001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 10501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 11001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 11501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 12001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 12501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 13001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 13501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 14001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 14501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 15001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 15501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 16001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 16501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 17001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 17501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 18001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 18501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 19001).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 19501).unsafeRunAsync(_ => ())
+      //      replays(reqTimestamp, 20001).unsafeRunAsync(_ => ())
 
 
       // async calls to get replays all in one go in parallel
 
       Ok(s"Request sent at: ${Utils.timeNow}")
 
-    }
-
     case GET -> Root / "name" / name =>
-      Ok(Database.getUsersWithSimilarName(s"%$name%"))
+      Ok(Utils.searchPlayer(s"%$name%"))
 
     case GET -> Root / "playerid" / player_id =>
-      Ok(Database.getUserGames(player_id.toLong))
+      Ok(Utils.getPlayerGames(player_id.toLong))
 
-    case _ -> Root =>
+    case _ =>
       Ok("Error")
 
   }.orNotFound
@@ -119,7 +105,7 @@ object Main extends IOApp.Simple {
     .default[IO]
     .withHost(ipv4"0.0.0.0")
     .withPort(port"7000")
-    .withHttpApp(helloWorldService)
+    .withHttpApp(routes)
     .build
     .use(_ => IO.never)
     .as(IO.unit)
