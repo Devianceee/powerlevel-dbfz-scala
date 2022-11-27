@@ -3,7 +3,14 @@ package org.powerlevel
 import cats.effect.IO
 import cats.implicits._
 import doobie.implicits._
+import doobie.postgres.implicits._
 import doobie.util.transactor.Transactor
+import doobie.util.transactor.Transactor._
+import doobie.util.ExecutionContexts
+
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
 case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],

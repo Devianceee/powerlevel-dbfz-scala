@@ -1,11 +1,12 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.12.17"
+ThisBuild / scalaVersion := "2.13.10"
 val http4sVersion = "0.23.10"
 val DoobieVersion = "1.0.0-RC1"
 val NewTypeVersion = "0.4.4"
 
 resolvers += Resolver.jcenterRepo
+resolvers += Resolver.bintrayRepo("asflierl", "maven")
 
 //enablePlugins(JavaAppPackaging)
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
@@ -28,6 +29,8 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "doobie-postgres" % DoobieVersion,
   "org.tpolecat" %% "doobie-hikari" % DoobieVersion,
   "io.estatico" %% "newtype" % NewTypeVersion,
+  "eu.flierl" %% "sglicko2" % "1.7.1",
+
 )
 
 lazy val root = (project in file("."))
