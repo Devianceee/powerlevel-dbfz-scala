@@ -12,6 +12,7 @@ import org.http4s.dsl.io._
 import org.http4s.ember.server._
 //import play.api.libs.json._
 import org.http4s.implicits._
+import fs2.io.file.Path
 
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -25,20 +26,25 @@ object Main extends IOApp.Simple {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
   val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
+  object playerName extends QueryParamDecoderMatcher[String]("name")
 
   def getReplaySingle(timestamp:String, fromRank: Int) = Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestamp, 0, numberOfMatchesQueried, fromRank)))
 //  def getUser(name: String) = Database.getUsersWithSimilarName(name) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for User $name! Completed at: ${Utils.timeNow}")
   def replays(timestamp: String, fromRank: Int): IO[Unit] = getReplaySingle(timestamp, fromRank) >> IO.println(s"${Thread.currentThread().getName} - Request Finished for Rank $fromRank! Completed at: ${Utils.timeNow}")
 
-//  val helloTest: IO[Unit] = IO(println("Hello")) >> IO.println(s"${Thread.currentThread().getName} - Request Finished! Completed at: ${Utils.timeNow}") >> IO.sleep(2.seconds) >> helloTest
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
 
   val getRoot = Request[IO](Method.GET, uri"/")
 
   val routes = HttpRoutes.of[IO] {
-    case GET -> Root / "hello" / name =>
-      Ok(s"Hello, $name. Time now is ${Utils.timeNow}")
+
+    case GET -> Root / "test" =>
+      Ok(s"Hello. Time now is ${Utils.timeNow}")
+
+    case request @ GET -> Root / "index.html" =>
+      StaticFile.fromPath(Path("frontend/index.html"), Some(request))
+        .getOrElseF(NotFound()) // In case the file doesn't exist
 
     case GET -> Root / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
@@ -64,37 +70,18 @@ object Main extends IOApp.Simple {
       replays(reqTimestamp, 9001).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 9501).unsafeRunAsync (_ => ())
       replays(reqTimestamp, 10001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 10501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 11001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 11501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 12001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 12501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 13001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 13501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 14001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 14501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 15001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 15501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 16001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 16501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 17001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 17501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 18001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 18501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 19001).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 19501).unsafeRunAsync(_ => ())
-      //      replays(reqTimestamp, 20001).unsafeRunAsync(_ => ())
-
 
       // async calls to get replays all in one go in parallel
 
       Ok(s"Request sent at: ${Utils.timeNow}")
 
-    case GET -> Root / "name" / name =>
+    case GET -> Root :? playerName(name) =>
       Ok(Utils.searchPlayer(s"%$name%"))
 
     case GET -> Root / "playerid" / player_id =>
-      Ok(Utils.getPlayerGames(player_id.toLong))
+      Ok(Utils.getPlayerGames(player_id.toLong)) // how to parse list -> json in elm?
+
+    // go to elm single page -> sends ping to api backend -> elm parses json response -> displays
 
     case _ =>
       Ok("Error")

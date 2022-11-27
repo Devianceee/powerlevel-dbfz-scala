@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Made much faster and added server with routes">
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Updated method of getting timestamp">
       <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/scala_compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/scala_compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_11_2022_10_35__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_11_2022_10_35__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_24_11_2022_10_22__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_24_11_2022_10_22__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Database.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Database.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/Main.elm" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/Main.elm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Utils.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Utils.scala" afterDir="false" />
     </list>
@@ -140,7 +140,7 @@
       </method>
     </configuration>
     <configuration default="true" type="ELM_TEST_RUN_CONFIGURATION" factoryName="Elm Test configuration factory">
-      <ElmTestRunConfiguration elm-folder="C:\Users\pr3da\AppData\Roaming\elm\0.19.1\packages\elm\core\1.0.5" />
+      <ElmTestRunConfiguration elm-folder="C:\Users\Shahi\IdeaProjects\powerlevel-dbfz-scala\frontend" />
       <method v="2" />
     </configuration>
     <configuration name="Scala REPL" type="ScalaScriptConsoleRunConfiguration" factoryName="Scala Console" temporary="true" show_console_on_std_err="false" show_console_on_std_out="false">

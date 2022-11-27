@@ -47,6 +47,7 @@ object Utils {
   }
 
   def getPlayerGames(player_id: Long) = {
+    println("in here")
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
         PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5)
