@@ -5,9 +5,9 @@ import cats.effect.unsafe.implicits.global
 import org.http4s.EntityDecoder.byteArrayDecoder
 import org.http4s.Method.POST
 import org.http4s.UrlForm
-import org.http4s.client.dsl.io._
-import org.http4s.ember.client._
-import org.http4s.implicits.http4sLiteralsSyntax
+import org.http4s.client.dsl.io.*
+import org.http4s.ember.client.*
+import org.http4s.implicits.uri
 import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.duration.DurationInt

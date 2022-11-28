@@ -1,17 +1,22 @@
 package org.powerlevel
 
-import cats.effect._
+import cats.effect.*
 import cats.effect.unsafe.implicits.global
-import cats.implicits._
-import com.comcast.ip4s._
-import io.circe.Encoder._
-import org.http4s._
+import cats.implicits.*
+import com.comcast.ip4s.*
+import io.circe.Encoder.*
+import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
-import org.http4s.dsl.io._
-import org.http4s.ember.server._
+import org.http4s.dsl.io.*
+import org.http4s.ember.server.*
 //import play.api.libs.json._
 import fs2.io.file.Path
 import org.http4s.implicits._
+
+import sglicko2.*
+import sglicko2.WinOrDraw.*
+import sglicko2.WinOrDraw.Ops.*
+
 
 object Main extends IOApp {
 
@@ -92,6 +97,16 @@ object Main extends IOApp {
     // TODO: run server which can be pinged to be able to cancel scheduled task and gracefully close database in case of maintenance
     // TODO: can probably add more flatMaps to places for better comprehension / less nesting (removes inner IO)
     // TODO: traverse keyword is very nice, see if I can use it in other places
-    server
+//    println(Utils.parseReplays(Requests.replayRequest(Requests.getLoginTimeStamp.unsafeRunSync(), 0, numberOfMatchesQueried, 11)).unsafeRunSync())
+//    server
+//    Leaderboard.fromPlayers().rankedPlayers
+//    Leaderboard.fromPlayers()
+    given Glicko2 = Glicko2()
+
+    val foo: Leaderboard[Nothing] = Leaderboard.Empty.after(RatingPeriod("Abby" winsVs "Becky"))
+
+    Leaderboard.fromPlayers(foo).after(RatingPeriod("Abby" winsVs "Becky"))
+
+    IO(ExitCode.Success)
   }
 }
