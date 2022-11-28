@@ -16,7 +16,7 @@ case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
-case class Player(uniquePlayerID: String, name: String)
+case class Player(uniquePlayerID: String, name: String, latestMatchTime: String)
 
 case class PlayerGames(matchTime: String,
                        winnerName: String, winnerCharacters: List[String],
@@ -73,14 +73,17 @@ object Database {
     }
   }
 
-  def searchPlayer(name: String): IO[List[(String, String)]] = {
-  // TODO case class for mapping
-    val f1 = fr"select unique_player_id, player_name from players"
-    val f2 = fr"where lower(player_name)"
-    val f3 = fr"like $name"
+  def searchPlayer(name: String): IO[List[(String, String, String)]] = {
+//    val f1 = fr"select unique_player_id, player_name from players"
+//    val f2 = fr"where lower(player_name)"
+//    val f3 = fr"like $name"
+    val f1 =
+      fr"""select distinct on (unique_player_id) unique_player_id, player_name, max(match_time) from players
+          inner join game_results on players.unique_player_id=game_results.winner_id or players.unique_player_id=game_results.loser_id
+          where lower(player_name) like $name
+          group by unique_player_id;"""
 
-    val getUsers = (f1 ++ f2 ++ f3).query[(String, String)]
-    getUsers.to[List].transact(xa)
+    f1.query[(String, String, String)].to[List].transact(xa)
   }
 
   def getPlayerGames(user_id: Long) = {
@@ -98,12 +101,10 @@ object Database {
 
 
   def writeToDB(replayResults:IO[List[ReplayResults]]): IO[List[Any]] = {
-//    println("Write to DB")
     val results = replayResults.flatMap { result =>
       result.traverse { details =>
         saveResult(details)
       }
-//      _ = println(Utils.timeNow + ": Finished writing to DB!")
     }
     IO.println(Utils.timeNow + ": Finished writing to DB!")
     results

@@ -35,7 +35,7 @@ object Utils {
   def searchPlayer(name: String) = {
     val players = Database.searchPlayer(name).map { players =>
       players.map { player =>
-        Player(player._1, player._2)
+        Player(player._1, player._2, Utils.epochToTime(player._3))
       }
     }
 

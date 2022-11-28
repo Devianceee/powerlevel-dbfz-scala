@@ -3,8 +3,10 @@ module Main exposing (..)
 import Browser
 import Html exposing (..)
 import Http
-import Json.Decode exposing (Decoder, list)
+import Json.Decode exposing (Decoder, decodeString, list, string)
 import Json.Decode as Decode exposing (Decoder)
+import Debug exposing (toString)
+import String exposing (join)
 
 -- MAIN
 
@@ -28,12 +30,18 @@ type alias PlayerGames =
   {
       matchTime : String,
       winnerName : String,
-      winnerCharacters : List(String),
+      winnerCharacters : List String,
       loserName : String,
-      loserCharacters : List(String)
+      loserCharacters : List String
   }
 
-init : () -> (Model, Cmd Msg)
+type alias SearchResult =
+    { uniquePlayerID: String
+    , name: String
+    , latestMatchTime: String
+    }
+
+init : () -> (Model, String -> Cmd Msg)
 init _ =
   (Loading, getPlayerGames)
 
@@ -41,6 +49,7 @@ init _ =
 
 type Msg
   = GotPlayerGames (Result Http.Error (List PlayerGames))
+  | GotSearchResults (Result Http.Error (List SearchResult))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -74,21 +83,42 @@ viewPlayerGames model =
   case model of
     Failure ->
       div []
-        [ text "I could not load games for some reason. "
-        ]
+        [ text "I could not load games for some reason"]
 
     Loading ->
       text "Loading..."
 
     Success games ->
-      p [] [text games]
+      let
+        _ = games
+
+        makeRow: PlayerGames -> Html Msg
+        makeRow =
+          \game -> tr []
+          [ td [] [ text game.matchTime ]
+          , td [] [ text game.winnerName ], td [] [ text (join ", " game.winnerCharacters) ]
+          , td [] [ text game.loserName ], td [] [ text (join ", " game.loserCharacters) ]
+          ]
+      in
+      table []
+        (
+            thead [] [ th[] [text "Match Time"], th[] [text "Winner"], th[] [text "Characters"], th[] [text "Loser"], th[] [text "Characters"]] ::
+            (List.map makeRow games)
+        )
 
 -- HTTP
 
-getPlayerGames : Cmd Msg
-getPlayerGames =
+searchPlayers : String -> Cmd Msg
+searchPlayers searchQuery =
+    Http.get
+        { url = "search?name=" + searchQuery
+        , expect = Http.expectJson GotSearchResults ???
+        }
+
+getPlayerGames : String -> Cmd Msg
+getPlayerGames id =
   Http.get
-    { url = "/playerid/180905221050371465"
+    { url = "/playerid/" ++ id
     , expect = Http.expectJson GotPlayerGames allGamesDecoder
     }
 -- https://stackoverflow.com/questions/35028430/how-to-extract-the-results-of-http-requests-in-elm
@@ -102,7 +132,8 @@ playerGamesDecoder =
     (Decode.field "loserName" Decode.string)
     (Decode.field "loserCharacters" (Decode.list Decode.string))
 
-
 allGamesDecoder : Decoder (List PlayerGames)
 allGamesDecoder =
     list playerGamesDecoder
+
+
