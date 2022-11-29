@@ -17,6 +17,10 @@ CREATE TABLE game_results (
   loser_id bigint NOT NULL,
   loser_name character varying NOT NULL,
   loser_characters VARCHAR[] NOT NULL,
+  glicko_value_winner numeric NOT NULL,
+  glicko_deviation_winner numeric NOT NULL,
+  glicko_value_loser numeric NOT NULL,
+  glicko_deviation_loser numeric NOT NULL,
   PRIMARY KEY (unique_match_id)
 );
 
@@ -29,7 +33,18 @@ CREATE TABLE game_results (
 CREATE TABLE players (
   unique_player_id bigint NOT NULL UNIQUE,
   player_name character varying NOT NULL,
+  numer_of_games int NOT NULL,
+  number_of_wins int NOT NULL,
+  glicko_value numeric NOT NULL,
+  glicko_deviation numeric NOT NULL, 
   PRIMARY KEY (unique_player_id)
 );
+
+CREATE TABLE vip_status (
+  unique_player_id bigint NOT NULL UNIQUE,
+  vip_status character varying NOT NULL,
+  notes character varying NOT NULL,
+  PRIMARY KEY (unique_player_id)
+)
 
 -- https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database

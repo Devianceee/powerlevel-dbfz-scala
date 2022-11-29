@@ -17,6 +17,8 @@ import sglicko2.*
 import sglicko2.WinOrDraw.*
 import sglicko2.WinOrDraw.Ops.*
 
+import math.Numeric.Implicits.infixNumericOps
+
 
 object Main extends IOApp {
 
@@ -99,14 +101,24 @@ object Main extends IOApp {
     // TODO: traverse keyword is very nice, see if I can use it in other places
 //    println(Utils.parseReplays(Requests.replayRequest(Requests.getLoginTimeStamp.unsafeRunSync(), 0, numberOfMatchesQueried, 11)).unsafeRunSync())
 //    server
-//    Leaderboard.fromPlayers().rankedPlayers
-//    Leaderboard.fromPlayers()
-    given Glicko2 = Glicko2()
 
-    val foo: Leaderboard[Nothing] = Leaderboard.Empty.after(RatingPeriod("Abby" winsVs "Becky"))
+    given Glicko2 = Glicko2(scale = Scale.Glicko)
 
-    Leaderboard.fromPlayers(foo).after(RatingPeriod("Abby" winsVs "Becky"))
+//    val updatedLeaderboard = leaderboard after RatingPeriod(1111L winsVs 2222L, 1111L winsVs 2222L, 2222L winsVs 3333L)
+//    println((updatedLeaderboard.playersByIdInNoParticularOrder(1111L).confidence95.upper.value + updatedLeaderboard.playersByIdInNoParticularOrder(1111L).confidence95.lower.value) / 2)
+//    println(updatedLeaderboard.playersByIdInNoParticularOrder(1111L).deviation.value)
+//    println(updatedLeaderboard.playersInRankOrder)
+//    println()
+//    val foo = Utils.glickoUpdateGames(1111L, 2222L, updatedLeaderboard)
+//
+//    println((foo.playersByIdInNoParticularOrder(1111L).confidence95.upper.value + foo.playersByIdInNoParticularOrder(1111L).confidence95.lower.value) / 2)
+//    println(foo.playersByIdInNoParticularOrder(1111L).deviation.value)
+//    println(foo.playersInRankOrder)
+//    println(Database.getAllPlayersLastGlicko.unsafeRunSync())
 
+    val leaderboard = Utils.updateEntireGlickoLeaderboard
+
+    // general workflow for glicko ^
     IO(ExitCode.Success)
   }
 }

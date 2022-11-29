@@ -1,23 +1,44 @@
 package org.powerlevel
 
 import cats.effect.IO
-import play.api.libs.json._
+import play.api.libs.json.*
 import wvlet.airframe.msgpack.spi.MessagePack
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import scala.collection.immutable.::
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
+import io.circe.generic.auto.*
+import io.circe.parser.*
+import io.circe.syntax.*
+
+import sglicko2.{Leaderboard, Glicko2, Scale}
+import sglicko2.WinOrDraw.*
+import sglicko2.WinOrDraw.Ops.*
+import sglicko2.RatingPeriod
 
 
 object Utils {
+  given Glicko2 = Glicko2(scale = Scale.Glicko)
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
   def timestampToEpoch(s: JsValue): Long = {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
+  }
+
+  def updateEntireGlickoLeaderboard() = { // do this on boot AND after every time we get replays
+    val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
+    val formattedPlayers = allPlayers.map { player =>
+      Player(player._1, Rating(player._2), Deviation(player._3))
+    }
+    val leaderboard: Leaderboard[Long] = Leaderboard.fromPlayers(formattedPlayers)
+    leaderboard
+  }
+
+  def glickoUpdateGames(winnerID: Long, loserID: Long, leaderboard: Leaderboard[Long]) = {
+    // val updatedLeaderboard after (id)
+    val updatedLeaderboard: Leaderboard[Long] = leaderboard after RatingPeriod(winnerID winsVs loserID)
+    updatedLeaderboard
   }
 
   def epochToTime(epoch: String): String = {
