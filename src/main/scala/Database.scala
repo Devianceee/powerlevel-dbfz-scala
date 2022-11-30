@@ -1,28 +1,37 @@
 package org.powerlevel
 
 import cats.effect.IO
-import cats.implicits._
-import doobie.implicits._
-import doobie.postgres.implicits._
+import cats.implicits.*
+import doobie.implicits.*
+import doobie.postgres.implicits.*
 import doobie.util.transactor.Transactor
-import doobie.util.transactor.Transactor._
+import doobie.util.transactor.Transactor.*
 import doobie.util.ExecutionContexts
+import io.circe.generic.auto.*
+import io.circe.parser.*
+import io.circe.syntax.*
+//import org.powerlevel.Database.{getPlayerTotalGames, getPlayersLatestMatchID}
 
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
+// import sglicko2.{Leaderboard, Glicko2, Scale}
+import sglicko2.*
+import sglicko2.WinOrDraw.*
+import sglicko2.WinOrDraw.Ops.*
+import sglicko2.RatingPeriod
+import cats.effect.unsafe.implicits.global
+
 
 case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
-case class Player(uniquePlayerID: String, name: String, latestMatchTime: String)
+case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String)
 
 case class PlayerGames(matchTime: String,
                        winnerName: String, winnerCharacters: List[String],
                        loserName: String, loserCharacters: List[String])
 
 object Database {
+//    given Glicko2 = Glicko2(scale = Scale.Glicko)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
@@ -32,8 +41,8 @@ object Database {
   )
 
   def saveResult(details: ReplayResults) = {
+    given Glicko2 = Glicko2(scale = Scale.Glicko)
 
-//    println(details)
     val uniqueMatchID = details.uniqueMatchID
     val matchTime = details.matchTime
     val winnerID = details.winnerID
@@ -42,38 +51,57 @@ object Database {
     val loserID = details.loserID
     val loserName = details.loserName
     val loserCharacters = details.loserCharacters
+    val checkMatchID = checkIfMatchIdExists(uniqueMatchID).unsafeRunSync()
+    val uniqueMatch: Boolean = if (checkMatchID.length == 0) true else if (checkMatchID.head != uniqueMatchID) true else false
 
+    if ((winnerID != 0 && loserID != 0) && uniqueMatch) {
+      val glickoValuesAndDeviation = Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID) // still updating glicko even tho the match might be a duplicate
+      // check against match_id sql request to see if it exists and if it is a duplicate then return IO.Unit
 
-    if (winnerID != 0 && loserID != 0) {
-      val glickoValuesAndDeviation = Utils.glickoUpdateGames(winnerID, loserID, ???)
-      /* take latest value and deviation from last played game from player table
-      *  take whoever won and lost and return value
+      val glicko_value_winner: Double = (glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.lower.value) / 2
+      val glicko_deviation_winner: Double = glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).deviation.value
 
-      *  with the returned result, update each players value and deviation and insert into "val insertGameQuery" the values and deviation for both players
-         and returns back to main with the updated leaderboard
-      * */
+      val glicko_value_loser: Double = (glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.lower.value) / 2
+      val glicko_deviation_loser: Double = glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).deviation.value
 
-      val insertGameQuery =
-        sql"""insert into game_results (unique_match_id, match_time,
-           winner_id, winner_name, winner_characters,
-           loser_id, loser_name, loser_characters) values
+      val insertGameQuery = (
+        sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
            ($uniqueMatchID, $matchTime,
-           $winnerID, $winnerName, $winnerCharacters,
-           $loserID, $loserName, $loserCharacters) on conflict do nothing""".update.run
+           $winnerID, $winnerName, $winnerCharacters, $glicko_value_winner, $glicko_deviation_winner,
+           $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
+           on conflict do nothing""".update.run)
 
-      val insertWinnerPlayerQuery =
-        sql"""insert into players (unique_player_id, player_name) values
-           ($winnerID, $winnerName) on conflict do update set player_name = excluded.player_name""".update.run
+        if(winnerID == 220930094846699492L) {
+          println("under insertGameQuery + " + glicko_value_winner)
+          println(checkMatchID.head)
+          println(uniqueMatchID)
+        }
 
-      val insertLoserPlayerQuery =
-        sql"""insert into players (unique_player_id, player_name) values
-           ($loserID, $loserName) on conflict do update set player_name = excluded.player_name""".update.run
+       val insertWinnerPlayerQuery = (
+         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
+            ($winnerID, $winnerName, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
+            do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+
+         if (winnerID == 220930094846699492L) {
+           println("under insertWinnerPlayerQuery + " + glicko_value_winner)
+         }
+
+       val insertLoserPlayerQuery = (
+         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
+            ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
+                    do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+
+         if (winnerID == 220930094846699492L) {
+           println("under insertLoserPlayerQuery + " + glicko_value_winner)
+         }
+
+      Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID)
 
       val run = for {
         run1 <- insertGameQuery
-        run2 <- insertWinnerPlayerQuery
-        run3 <- insertLoserPlayerQuery
-      } yield (run1, run2, run3)
+         run2 <- insertWinnerPlayerQuery
+         run3 <- insertLoserPlayerQuery
+       } yield (run1, run2, run3)
 
       run.transact(xa)
     }
@@ -98,6 +126,11 @@ object Database {
     f1.query[Long].to[List].transact(xa)
   }
 
+  def checkIfMatchIdExists(match_id: Long): IO[List[Long]] = {
+    val f1 = fr"select unique_match_id from game_results where unique_match_id=$match_id order by match_time desc limit 1"
+    f1.query[Long].to[List].transact(xa)
+  }
+
 
   def searchPlayer(name: String): IO[List[(String, String, String)]] = {
     val f1 =
@@ -114,7 +147,6 @@ object Database {
     val f1 = fr"select match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
     val f2 = fr"where winner_id = ${user_id} or loser_id = ${user_id}"
     val f3 = fr"order by match_time desc"
-    // add query to COUNT() all their games to get total games
     val getGames = (f1 ++ f2 ++ f3).query[(String, String, List[String], String, List[String])]
     getGames.to[List].transact(xa)
   }
@@ -122,14 +154,14 @@ object Database {
 //  def findPlayerByName(s: String) // SQL query to get players
 // (select * from players where player_name like '%Deviance%';) and map to case class for all their games
 
-  def getPlayerTotalGames(user_id: Long) = {
-    val f1 = fr"select count * from game_results where winner_id=$user_id or loser_id=$user_id"
+  def getPlayerTotalGames(user_id: Long): IO[List[Int]] = {
+    val f1 = fr"select count (*) from game_results where winner_id=$user_id or loser_id=$user_id"
     val getTotalGames = (f1).query[Int]
     getTotalGames.to[List].transact(xa)
   }
 
   def getPlayerWonGames(user_id: Long) = {
-    val f1 = fr"select count * from game_results where winner_id=$user_id"
+    val f1 = fr"select count (*) from game_results where winner_id=$user_id"
     val getTotalGames = (f1).query[Int]
     getTotalGames.to[List].transact(xa)
   }
@@ -148,6 +180,7 @@ object Database {
         saveResult(details)
       }
     }
+    // update player column here?? for game numbers and stuff such as number_of_games and wins
     IO.println(Utils.timeNow + ": Finished writing to DB!")
     results
   }
