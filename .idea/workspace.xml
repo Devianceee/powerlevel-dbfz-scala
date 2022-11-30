@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +81,7 @@
     </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="glicko-implementation" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -159,6 +158,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main" />
+        <item itemvalue="Scala REPL.Scala REPL" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -304,7 +305,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669818820220</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="- Removed adminer and restored back to default port">
+      <created>1669826475677</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1669826475677</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -350,7 +358,8 @@
     <MESSAGE value="- glicko2" />
     <MESSAGE value="- starting glicko" />
     <MESSAGE value="- Fixed glicko by removing second evaluation (by accident oops)&#10;- Made requests sequential so that it doesn't mess up the values creating being in the wrong order" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Fixed glicko by removing second evaluation (by accident oops)&#10;- Made requests sequential so that it doesn't mess up the values creating being in the wrong order" />
+    <MESSAGE value="- Removed adminer and restored back to default port" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Removed adminer and restored back to default port" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

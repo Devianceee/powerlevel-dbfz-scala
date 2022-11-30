@@ -114,7 +114,7 @@ object Main extends IOApp {
   val server = EmberServerBuilder
     .default[IO]
     .withHost(ipv4"0.0.0.0")
-//    .withPort(port"")
+    .withPort(port"80")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)
