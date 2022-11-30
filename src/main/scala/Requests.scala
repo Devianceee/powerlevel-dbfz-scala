@@ -16,7 +16,6 @@ import scala.concurrent.duration.DurationInt
 
 
 object Requests {
-//  given Glicko2 = Glicko2(scale = Scale.Glicko)
 
 
   private def loginRequest(): IO[String] = {

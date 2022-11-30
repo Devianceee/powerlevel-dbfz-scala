@@ -22,6 +22,8 @@ import math.Numeric.Implicits.infixNumericOps
 
 object Main extends IOApp {
   given Glicko2 = Glicko2(scale = Scale.Glicko)
+//given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
+
 
   def updateEntireGlickoLeaderboardAfterReplays(winnerID: Long, loserID: Long): Leaderboard[Long] = {
     leaderboard = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
@@ -30,7 +32,6 @@ object Main extends IOApp {
 
 //  val get_replay_url = "https://dbf.channel.or.jp/api/catalog/get_replay"
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
-//  given Glicko2 = Glicko2(scale = Scale.Glicko)
 
 
   val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way

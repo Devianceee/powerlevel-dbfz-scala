@@ -17,8 +17,9 @@ import sglicko2.WinOrDraw.Ops.*
 
 
 object Utils {
+  given Glicko2 = Glicko2(scale = Scale.Glicko)
 
-//  given Glicko2 = Glicko2(scale = Scale.Glicko)
+  //  given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
@@ -28,7 +29,6 @@ object Utils {
 
   def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot AND after every time we get replays
     import cats.effect.unsafe.implicits.global
-    given Glicko2 = Glicko2(scale = Scale.Glicko)
 
     val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
     val formattedPlayers = allPlayers.map { player =>
@@ -44,7 +44,6 @@ object Utils {
 
 //  def updateEntireGlickoLeaderboardAfterReplays(): Leaderboard[Long] = { // do this on boot AND after every time we get replays
 //    import cats.effect.unsafe.implicits.global
-//    given Glicko2 = Glicko2()
 //
 //    val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
 //    val formattedPlayers = allPlayers.map { player =>
@@ -59,7 +58,6 @@ object Utils {
 //  }
 
   def glickoUpdateGames(winnerID: Long, loserID: Long, leaderboard: Leaderboard[Long]): Leaderboard[Long] = {
-    given Glicko2 = Glicko2(scale = Scale.Glicko)
     // val updatedLeaderboard after (id)
     val updatedLeaderboard: Leaderboard[Long] = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
     updatedLeaderboard
@@ -95,7 +93,7 @@ object Utils {
   def getPlayerGames(player_id: Long) = {
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
-        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5)
+        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5, game._6, game._7, game._8, game._9)
       }
     }
 

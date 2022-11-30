@@ -27,11 +27,13 @@ case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
 case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String)
 
 case class PlayerGames(matchTime: String,
-                       winnerName: String, winnerCharacters: List[String],
-                       loserName: String, loserCharacters: List[String])
+                       winnerName: String, winnerCharacters: List[String], glickoValueWinner: Double, glickoValueDeviationWinner: Double,
+                       loserName: String, loserCharacters: List[String], glickoValueLoser: Double, glickoValueDeviationLoser: Double)
 
 object Database {
-//    given Glicko2 = Glicko2(scale = Scale.Glicko)
+  given Glicko2 = Glicko2(scale = Scale.Glicko)
+
+  //  given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
@@ -41,7 +43,6 @@ object Database {
   )
 
   def saveResult(details: ReplayResults) = {
-    given Glicko2 = Glicko2(scale = Scale.Glicko)
 
     val uniqueMatchID = details.uniqueMatchID
     val matchTime = details.matchTime
@@ -144,10 +145,10 @@ object Database {
 
   def getPlayerGames(user_id: Long) = {
     // TODO case class for mapping
-    val f1 = fr"select match_time, winner_name, winner_characters, loser_name, loser_characters from game_results"
+    val f1 = fr"select match_time, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser from game_results"
     val f2 = fr"where winner_id = ${user_id} or loser_id = ${user_id}"
     val f3 = fr"order by match_time desc"
-    val getGames = (f1 ++ f2 ++ f3).query[(String, String, List[String], String, List[String])]
+    val getGames = (f1 ++ f2 ++ f3).query[(String, String, List[String], Double, Double, String, List[String], Double, Double)]
     getGames.to[List].transact(xa)
   }
 
