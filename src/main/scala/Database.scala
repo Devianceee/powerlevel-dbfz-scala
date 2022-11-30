@@ -71,31 +71,31 @@ object Database {
            $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
            on conflict do nothing""".update.run)
 
-        if(winnerID == 220930094846699492L) {
-          println("under insertGameQuery + " + glicko_value_winner)
-          println(checkMatchID.head)
-          println(uniqueMatchID)
-        }
+//        if(winnerID == 220930094846699492L) {
+//          println("under insertGameQuery + " + glicko_value_winner)
+//          println(checkMatchID.head)
+//          println(uniqueMatchID)
+//        }
 
        val insertWinnerPlayerQuery = (
          sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
             ($winnerID, $winnerName, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
             do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
 
-         if (winnerID == 220930094846699492L) {
-           println("under insertWinnerPlayerQuery + " + glicko_value_winner)
-         }
+//         if (winnerID == 220930094846699492L) {
+//           println("under insertWinnerPlayerQuery + " + glicko_value_winner)
+//         }
 
        val insertLoserPlayerQuery = (
          sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
             ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
                     do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
 
-         if (winnerID == 220930094846699492L) {
-           println("under insertLoserPlayerQuery + " + glicko_value_winner)
-         }
+//         if (winnerID == 220930094846699492L) {
+//           println("under insertLoserPlayerQuery + " + glicko_value_winner)
+//         }
 
-      Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID)
+//      Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID)
 
       val run = for {
         run1 <- insertGameQuery

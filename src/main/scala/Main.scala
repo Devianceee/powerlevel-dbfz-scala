@@ -33,11 +33,11 @@ object Main extends IOApp {
 //  given Glicko2 = Glicko2(scale = Scale.Glicko)
 
 
-  val numberOfMatchesQueried = 20 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
   println("Preparing Glicko leaderboard...")
-  var leaderboard = Utils.bootUpdateEntireGlickoLeaderboard()
+  var leaderboard = Utils.bootUpdateEntireGlickoLeaderboard
   println("Finished preparing Glicko leaderboard!")
 
   object playerName extends QueryParamDecoderMatcher[String]("name")
@@ -59,33 +59,33 @@ object Main extends IOApp {
     case GET -> Root / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
       println(reqTimestamp)
-//      println(replays(reqTimestamp, 11).unsafeRunSync())
+      replays(reqTimestamp, 11).unsafeRunSync()
 //      replays(reqTimestamp, 501).unsafeRunSync()
 //      replays(reqTimestamp, 1001).unsafeRunSync()
 //      replays(reqTimestamp, 1501).unsafeRunSync()
-//      replays(reqTimestamp, 2001).unsafeRunSync()
+      replays(reqTimestamp, 2001).unsafeRunSync()
 //      replays(reqTimestamp, 2501).unsafeRunSync()
 //      replays(reqTimestamp, 3001).unsafeRunSync()
 //      replays(reqTimestamp, 3501).unsafeRunSync()
-//      replays(reqTimestamp, 4001).unsafeRunSync()
+      replays(reqTimestamp, 4001).unsafeRunSync()
 //      replays(reqTimestamp, 4501).unsafeRunSync()
 //      replays(reqTimestamp, 5001).unsafeRunSync()
 //      replays(reqTimestamp, 5501).unsafeRunSync()
-//      replays(reqTimestamp, 6001).unsafeRunSync()
+      replays(reqTimestamp, 6001).unsafeRunSync()
 //      replays(reqTimestamp, 6501).unsafeRunSync()
 //      replays(reqTimestamp, 7001).unsafeRunSync()
 //      replays(reqTimestamp, 7501).unsafeRunSync()
-//      replays(reqTimestamp, 8001).unsafeRunSync()
+      replays(reqTimestamp, 8001).unsafeRunSync()
 //      replays(reqTimestamp, 8501).unsafeRunSync()
 //      replays(reqTimestamp, 9001).unsafeRunSync()
 //      replays(reqTimestamp, 9501).unsafeRunSync()
-//      replays(reqTimestamp, 10001).unsafeRunSync()
+      replays(reqTimestamp, 10001).unsafeRunSync()
 
-      val foo = (replays(reqTimestamp, 11), replays(reqTimestamp, 501), replays(reqTimestamp, 1001), replays(reqTimestamp, 1501), replays(reqTimestamp, 2001), replays(reqTimestamp, 2501),
-        replays(reqTimestamp, 3001), replays(reqTimestamp, 3501), replays(reqTimestamp, 4001), replays(reqTimestamp, 4501), replays(reqTimestamp, 5001)).parMapN { (_, _, _, _, _, _, _, _, _, _, _) => () }
+//      val foo = (replays(reqTimestamp, 11), replays(reqTimestamp, 501), replays(reqTimestamp, 1001), replays(reqTimestamp, 1501), replays(reqTimestamp, 2001), replays(reqTimestamp, 2501),
+//        replays(reqTimestamp, 3001), replays(reqTimestamp, 3501), replays(reqTimestamp, 4001), replays(reqTimestamp, 4501), replays(reqTimestamp, 5001)).parMapN { (_, _, _, _, _, _, _, _, _, _, _) => () }
 
 //      val foo = (replays(reqTimestamp, 11), replays(reqTimestamp, 501)).parMapN { (_, _) => () }
-      foo.unsafeRunSync()
+//      foo.unsafeRunSync()
 
 //      leaderboard = Utils.updateEntireGlickoLeaderboard()
 

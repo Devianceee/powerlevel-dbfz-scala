@@ -26,7 +26,7 @@ object Utils {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
   }
 
-  def bootUpdateEntireGlickoLeaderboard(): Leaderboard[Long] = { // do this on boot AND after every time we get replays
+  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot AND after every time we get replays
     import cats.effect.unsafe.implicits.global
     given Glicko2 = Glicko2(scale = Scale.Glicko)
 
