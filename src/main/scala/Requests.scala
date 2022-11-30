@@ -9,12 +9,14 @@ import org.http4s.client.dsl.io.*
 import org.http4s.ember.client.*
 import org.http4s.implicits.uri
 import play.api.libs.json.{JsValue, Json}
+import sglicko2.{Glicko2, Scale}
 
 import scala.concurrent.duration.DurationInt
 
 
 
 object Requests {
+
 
   private def loginRequest(): IO[String] = {
     val loginJson = """[["", "", 2,"0.0.3", 3],["76561199056721807", "1100001415a978f", 256, 0]]"""

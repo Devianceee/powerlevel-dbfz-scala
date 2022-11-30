@@ -1,23 +1,66 @@
 package org.powerlevel
 
 import cats.effect.IO
-import play.api.libs.json._
+import play.api.libs.json.*
 import wvlet.airframe.msgpack.spi.MessagePack
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import scala.collection.immutable.::
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
+import io.circe.generic.auto.*
+import io.circe.parser.*
+import io.circe.syntax.*
+
+import sglicko2.*
+import sglicko2.WinOrDraw.*
+import sglicko2.WinOrDraw.Ops.*
 
 
 object Utils {
+  given Glicko2 = Glicko2(scale = Scale.Glicko)
+
+  //  given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
   def timestampToEpoch(s: JsValue): Long = {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
+  }
+
+  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot AND after every time we get replays
+    import cats.effect.unsafe.implicits.global
+
+    val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
+    val formattedPlayers = allPlayers.map { player =>
+      Player(player._1, Rating(player._2), Deviation(player._3))
+    }
+    val leaderboard = Leaderboard.Empty
+    println(leaderboard.rankedPlayers)
+    val leaderboard2: Leaderboard[Long] = Leaderboard.fromPlayers(formattedPlayers)
+    println(leaderboard2.rankedPlayers)
+    println("Leaderboard updated")
+    leaderboard2
+  }
+
+//  def updateEntireGlickoLeaderboardAfterReplays(): Leaderboard[Long] = { // do this on boot AND after every time we get replays
+//    import cats.effect.unsafe.implicits.global
+//
+//    val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
+//    val formattedPlayers = allPlayers.map { player =>
+//      Player(player._1, Rating(player._2), Deviation(player._3))
+//    }
+//    val leaderboard = Leaderboard.Empty
+//    println(leaderboard.rankedPlayers)
+//    val leaderboard2: Leaderboard[Long] = Leaderboard.fromPlayers(formattedPlayers)
+//    println(leaderboard2.rankedPlayers)
+//    println("Leaderboard updated")
+//    leaderboard2
+//  }
+
+  def glickoUpdateGames(winnerID: Long, loserID: Long, leaderboard: Leaderboard[Long]): Leaderboard[Long] = {
+    // val updatedLeaderboard after (id)
+    val updatedLeaderboard: Leaderboard[Long] = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
+    updatedLeaderboard
   }
 
   def epochToTime(epoch: String): String = {
@@ -35,7 +78,7 @@ object Utils {
   def searchPlayer(name: String) = {
     val players = Database.searchPlayer(name).map { players =>
       players.map { player =>
-        Player(player._1, player._2, Utils.epochToTime(player._3))
+        DBPlayer(player._1, player._2, Utils.epochToTime(player._3))
       }
     }
 
@@ -50,7 +93,7 @@ object Utils {
   def getPlayerGames(player_id: Long) = {
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
-        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5)
+        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5, game._6, game._7, game._8, game._9)
       }
     }
 
@@ -89,7 +132,7 @@ object Utils {
 
     val jsonList: IO[JsValue] = for {
       parse <- response
-//      _ = println(parse)
+//      _ = println(parse) // print for debug
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
     /*
@@ -106,7 +149,10 @@ object Utils {
         })
     }
 //    Database.writeToDB(matches)
-    matches
+    val reversedMatches = for {
+      x <- matches
+    } yield x.reverse
+    reversedMatches
   }
 
 

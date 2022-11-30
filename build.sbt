@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
 //  "io.estatico" %% "newtype" % NewTypeVersion,
 //  "eu.flierl" %% "sglicko2" % "1.7.1",
   "eu.flierl" %% "sglicko2" % "3.0.0",
+  "org.typelevel" %% "cats-effect-cps" % "0.4.0",
 
 )
 
