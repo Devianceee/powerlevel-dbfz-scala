@@ -312,7 +312,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669826475677</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="- Removed adminer and restored back to port 80">
+      <created>1669828220423</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1669828220423</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -359,7 +366,8 @@
     <MESSAGE value="- starting glicko" />
     <MESSAGE value="- Fixed glicko by removing second evaluation (by accident oops)&#10;- Made requests sequential so that it doesn't mess up the values creating being in the wrong order" />
     <MESSAGE value="- Removed adminer and restored back to default port" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Removed adminer and restored back to default port" />
+    <MESSAGE value="- Removed adminer and restored back to port 80" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Removed adminer and restored back to port 80" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
