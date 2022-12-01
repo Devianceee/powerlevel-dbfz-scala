@@ -34,7 +34,7 @@ object Main extends IOApp {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
 
-  val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 30 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
   println("Preparing Glicko leaderboard...")
@@ -62,23 +62,23 @@ object Main extends IOApp {
       println(reqTimestamp)
       replays(reqTimestamp, 11).unsafeRunSync()
 //      replays(reqTimestamp, 501).unsafeRunSync()
-      replays(reqTimestamp, 1001).unsafeRunSync()
+//      replays(reqTimestamp, 1001).unsafeRunSync()
 //      replays(reqTimestamp, 1501).unsafeRunSync()
       replays(reqTimestamp, 2001).unsafeRunSync()
 //      replays(reqTimestamp, 2501).unsafeRunSync()
-      replays(reqTimestamp, 3001).unsafeRunSync()
+//      replays(reqTimestamp, 3001).unsafeRunSync()
 //      replays(reqTimestamp, 3501).unsafeRunSync()
       replays(reqTimestamp, 4001).unsafeRunSync()
 //      replays(reqTimestamp, 4501).unsafeRunSync()
-      replays(reqTimestamp, 5001).unsafeRunSync()
+//      replays(reqTimestamp, 5001).unsafeRunSync()
 //      replays(reqTimestamp, 5501).unsafeRunSync()
       replays(reqTimestamp, 6001).unsafeRunSync()
 //      replays(reqTimestamp, 6501).unsafeRunSync()
-      replays(reqTimestamp, 7001).unsafeRunSync()
+//      replays(reqTimestamp, 7001).unsafeRunSync()
 //      replays(reqTimestamp, 7501).unsafeRunSync()
       replays(reqTimestamp, 8001).unsafeRunSync()
 //      replays(reqTimestamp, 8501).unsafeRunSync()
-      replays(reqTimestamp, 9001).unsafeRunSync()
+//      replays(reqTimestamp, 9001).unsafeRunSync()
 //      replays(reqTimestamp, 9501).unsafeRunSync()
       replays(reqTimestamp, 10001).unsafeRunSync()
 
