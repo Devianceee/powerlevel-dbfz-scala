@@ -34,7 +34,7 @@ object Main extends IOApp {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
 
-  val numberOfMatchesQueried = 30 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
   println("Preparing Glicko leaderboard...")
@@ -113,8 +113,9 @@ object Main extends IOApp {
 
   val server = EmberServerBuilder
     .default[IO]
-    .withHost(ipv4"0.0.0.0")
-    .withPort(port"80")
+//    .withHost(ipv4"0.0.0.0")
+//    .withPort(port"80")
+    .withPort(port"443")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)

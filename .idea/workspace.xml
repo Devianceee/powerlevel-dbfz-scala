@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_24_11_2022_10_22_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_24_11_2022_10_22__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
     </list>
@@ -326,7 +328,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669830007374</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="- reduced number of calls">
+      <created>1669855506167</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1669855506167</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -374,7 +383,8 @@
     <MESSAGE value="- Fixed glicko by removing second evaluation (by accident oops)&#10;- Made requests sequential so that it doesn't mess up the values creating being in the wrong order" />
     <MESSAGE value="- Removed adminer and restored back to default port" />
     <MESSAGE value="- Removed adminer and restored back to port 80" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Removed adminer and restored back to port 80" />
+    <MESSAGE value="- reduced number of calls" />
+    <option name="LAST_COMMIT_MESSAGE" value="- reduced number of calls" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
