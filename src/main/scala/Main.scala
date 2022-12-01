@@ -8,7 +8,8 @@ import io.circe.Encoder.*
 import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.dsl.io.*
-import org.http4s.ember.server.*
+//import org.http4s.ember.server.*
+import org.http4s.blaze.server.*
 //import play.api.libs.json._
 import fs2.io.file.Path
 import org.http4s.implicits._
@@ -18,7 +19,7 @@ import sglicko2.WinOrDraw.*
 import sglicko2.WinOrDraw.Ops.*
 
 import math.Numeric.Implicits.infixNumericOps
-
+//import scala.concurrent.ExecutionContext.global
 
 object Main extends IOApp {
   given Glicko2 = Glicko2(scale = Scale.Glicko)
@@ -111,13 +112,10 @@ object Main extends IOApp {
 
   }.orNotFound
 
-  val server = EmberServerBuilder
-    .default[IO]
-//    .withHost(ipv4"0.0.0.0")
-//    .withPort(port"80")
-    .withPort(port"443")
+  val server = BlazeServerBuilder[IO](scala.concurrent.ExecutionContext.global)
+    .bindHttp(80, "localhost")
     .withHttpApp(routes)
-    .build
+    .resource
     .use(_ => IO.never)
     .as(ExitCode.Success)
 
