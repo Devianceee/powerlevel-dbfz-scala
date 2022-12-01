@@ -19,7 +19,9 @@ import sglicko2.WinOrDraw.*
 import sglicko2.WinOrDraw.Ops.*
 
 import math.Numeric.Implicits.infixNumericOps
-//import scala.concurrent.ExecutionContext.global
+import java.net.InetAddress
+
+import scala.concurrent.ExecutionContext
 
 object Main extends IOApp {
   given Glicko2 = Glicko2(scale = Scale.Glicko)
@@ -112,9 +114,10 @@ object Main extends IOApp {
 
   }.orNotFound
 
-  val server = BlazeServerBuilder[IO](scala.concurrent.ExecutionContext.global)
-    .bindHttp(80, "localhost")
+  val server = BlazeServerBuilder[IO](ExecutionContext.global)
+    .bindHttp(80, InetAddress.getLoopbackAddress.getHostAddress)
     .withHttpApp(routes)
+    .withSslContext(sslContext)
     .resource
     .use(_ => IO.never)
     .as(ExitCode.Success)
