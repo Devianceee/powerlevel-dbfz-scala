@@ -21,8 +21,9 @@ import math.Numeric.Implicits.infixNumericOps
 
 
 object Main extends IOApp {
-  given Glicko2 = Glicko2(scale = Scale.Glicko)
+//  given Glicko2 = Glicko2(scale = Scale.Glicko)
 //given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
+given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
 
   def updateEntireGlickoLeaderboardAfterReplays(winnerID: Long, loserID: Long): Leaderboard[Long] = {
@@ -34,7 +35,7 @@ object Main extends IOApp {
 //  val login_url = "https://dbf.channel.or.jp/api/user/login"
 
 
-  val numberOfMatchesQueried = 100 // better to do this via .conf file or some other environment way
+  val numberOfMatchesQueried = 50 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
   println("Preparing Glicko leaderboard...")
@@ -60,26 +61,16 @@ object Main extends IOApp {
     case GET -> Root / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
       println(reqTimestamp)
-      replays(reqTimestamp, 11).unsafeRunSync()
-//      replays(reqTimestamp, 501).unsafeRunSync()
-//      replays(reqTimestamp, 1001).unsafeRunSync()
-//      replays(reqTimestamp, 1501).unsafeRunSync()
+      replays(reqTimestamp, 1).unsafeRunSync()
+      replays(reqTimestamp, 1001).unsafeRunSync()
       replays(reqTimestamp, 2001).unsafeRunSync()
-//      replays(reqTimestamp, 2501).unsafeRunSync()
-//      replays(reqTimestamp, 3001).unsafeRunSync()
-//      replays(reqTimestamp, 3501).unsafeRunSync()
+      replays(reqTimestamp, 3001).unsafeRunSync()
       replays(reqTimestamp, 4001).unsafeRunSync()
-//      replays(reqTimestamp, 4501).unsafeRunSync()
-//      replays(reqTimestamp, 5001).unsafeRunSync()
-//      replays(reqTimestamp, 5501).unsafeRunSync()
+      replays(reqTimestamp, 5001).unsafeRunSync()
       replays(reqTimestamp, 6001).unsafeRunSync()
-//      replays(reqTimestamp, 6501).unsafeRunSync()
-//      replays(reqTimestamp, 7001).unsafeRunSync()
-//      replays(reqTimestamp, 7501).unsafeRunSync()
+      replays(reqTimestamp, 7001).unsafeRunSync()
       replays(reqTimestamp, 8001).unsafeRunSync()
-//      replays(reqTimestamp, 8501).unsafeRunSync()
-//      replays(reqTimestamp, 9001).unsafeRunSync()
-//      replays(reqTimestamp, 9501).unsafeRunSync()
+      replays(reqTimestamp, 9001).unsafeRunSync()
       replays(reqTimestamp, 10001).unsafeRunSync()
 
 //      val foo = (replays(reqTimestamp, 11), replays(reqTimestamp, 501), replays(reqTimestamp, 1001), replays(reqTimestamp, 1501), replays(reqTimestamp, 2001), replays(reqTimestamp, 2501),
@@ -113,9 +104,9 @@ object Main extends IOApp {
 
   val server = EmberServerBuilder
     .default[IO]
-//    .withHost(ipv4"0.0.0.0")
-//    .withPort(port"80")
-    .withPort(port"443")
+    .withHost(ipv4"0.0.0.0")
+    .withPort(port"80")
+//    .withPort(port"443")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)

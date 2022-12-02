@@ -31,8 +31,8 @@ case class PlayerGames(matchTime: String,
                        loserName: String, loserCharacters: List[String], glickoValueLoser: Double, glickoValueDeviationLoser: Double)
 
 object Database {
-  given Glicko2 = Glicko2(scale = Scale.Glicko)
-
+//  given Glicko2 = Glicko2(scale = Scale.Glicko)
+  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
   //  given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
@@ -111,9 +111,9 @@ object Database {
     }
   }
 
-  def getPlayerLastGlicko(user_id: Long): IO[List[(Long, Double, Double)]] = {
-    val f1 = fr"select unique_player_id, glicko_value, glicko_deviation from players where unique_player_id = $user_id"
-    f1.query[(Long, Double, Double)].to[List].transact(xa)
+  def getPlayerLastGlicko(user_id: Long): IO[List[(Double, Double)]] = {
+    val f1 = fr"select glicko_value, glicko_deviation from players where unique_player_id = $user_id"
+    f1.query[(Double, Double)].to[List].transact(xa)
   }
 
   def getAllPlayersLastGlicko: IO[List[(Long, Double, Double)]] = {
@@ -135,7 +135,7 @@ object Database {
 
   def searchPlayer(name: String): IO[List[(String, String, String)]] = {
     val f1 =
-      fr"""select distinct on (unique_player_id) unique_player_id, player_name, max(match_time) from players
+      fr"""select distinct on (unique_player_id) unique_player_id, player_name, max(match_time), glicko_value, glicko_deviation from players
           inner join game_results on players.unique_player_id=game_results.winner_id or players.unique_player_id=game_results.loser_id
           where lower(player_name) like $name
           group by unique_player_id;"""
@@ -171,6 +171,14 @@ object Database {
     // TODO case class for mapping
     val f1 = fr"select unique_player_id, player_name, glicko_value, glicko_deviation from players"
     val f2 = fr"order by glicko_value desc"
+    val getGames = (f1 ++ f2).query[(String, String, String, String)]
+    getGames.to[List].transact(xa)
+  }
+
+  def getTop100RankingsInOrder = {
+    // TODO case class for mapping
+    val f1 = fr"select unique_player_id, player_name, glicko_value, glicko_deviation from players"
+    val f2 = fr"order by glicko_value desc limit 100"
     val getGames = (f1 ++ f2).query[(String, String, String, String)]
     getGames.to[List].transact(xa)
   }
