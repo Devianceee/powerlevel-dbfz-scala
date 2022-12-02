@@ -6325,6 +6325,7 @@ var $rundis$elm_bootstrap$Bootstrap$CDN$stylesheet = A3(
 	_List_Nil);
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$core$String$toLower = _String_toLower;
 var $elm$html$Html$table = _VirtualDom_node('table');
 var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$html$Html$th = _VirtualDom_node('th');
@@ -6479,7 +6480,8 @@ var $author$project$PlayerSearch$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(model.query)
+										$elm$html$Html$text(
+										$elm$core$String$toLower(model.query))
 									])),
 								A2(
 								$elm$html$Html$button,

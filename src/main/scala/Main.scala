@@ -72,7 +72,8 @@ object Main extends IOApp {
       Ok(s"Request sent at: ${Utils.timeNow}")
 
     case GET -> Root / "api" / "search" :? playerName(name) =>
-      Ok(Utils.searchPlayer(s"%$name%"))
+      val lowercase = name.toLowerCase()
+      Ok(Utils.searchPlayer(s"%$lowercase%"))
 
     case GET -> Root / "api" / "playerid" / player_id =>
       Ok(Utils.getPlayerGames(player_id.toLong)) // how to parse list -> json in elm?

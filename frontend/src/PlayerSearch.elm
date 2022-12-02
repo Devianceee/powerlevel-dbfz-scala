@@ -133,7 +133,7 @@ view model =
       ]
     , div [class "navbar navbar-expand-sm justify-content-center"] 
     [
-      input [ onInput UpdateQuery ] [ text model.query ]
+      input [ onInput UpdateQuery ] [ text (String.toLower model.query) ]
       , button [ onClick SendRequest ] [ text "Search" ]
       
     ]

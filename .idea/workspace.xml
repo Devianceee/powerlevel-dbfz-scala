@@ -4,16 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- potential fixes?">
-      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" afterDir="false" />
+    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/PlayerSearch.elm" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/PlayerSearch.elm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Database.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Database.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Requests.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Requests.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Utils.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Utils.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -369,7 +366,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669918879049</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways">
+      <created>1670020649387</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1670020649387</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -421,7 +425,8 @@
     <MESSAGE value="- potential fixes to ssl and ipv6" />
     <MESSAGE value="- swapped to BlazeServer instead of EmberServer" />
     <MESSAGE value="- potential fixes?" />
-    <option name="LAST_COMMIT_MESSAGE" value="- potential fixes?" />
+    <MESSAGE value="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
