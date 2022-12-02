@@ -17,9 +17,7 @@ import sglicko2.WinOrDraw.Ops.*
 
 
 object Utils {
-//  given Glicko2 = Glicko2(scale = Scale.Glicko)
   given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
-  //  given Glicko2 = Glicko2(tau = Tau[1d], defaultVolatility = Volatility(0.1d), scale = Scale.Glicko)
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
@@ -78,7 +76,7 @@ object Utils {
   def searchPlayer(name: String) = {
     val players = Database.searchPlayer(name).map { players =>
       players.map { player =>
-        DBPlayer(player._1, player._2, Utils.epochToTime(player._3))
+        DBPlayer(player._1, player._2, (Utils.epochToTime(player._3) + " UTC"), player._4, player._5)
       }
     }
 

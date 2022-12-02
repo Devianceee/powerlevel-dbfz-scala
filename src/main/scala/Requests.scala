@@ -17,7 +17,6 @@ import scala.concurrent.duration.DurationInt
 
 object Requests {
 
-
   private def loginRequest(): IO[String] = {
     val loginJson = """[["", "", 2,"0.0.3", 3],["76561199056721807", "1100001415a978f", 256, 0]]"""
     val postRequest = POST (UrlForm("data" -> Utils.packJson(loginJson)), uri"https://dbf.channel.or.jp/api/user/login")
@@ -35,11 +34,6 @@ object Requests {
   }
 
   def replayRequest(time: String, replayPages: Int, numberOfMatchesQueried: Int, fromRank: Int, character: Int = -1): IO[String] = {
-//    val time = Requests.getLoginTimeStamp.unsafeRunSync()
-
-//    if (time.length < 6) {
-//      time = Requests.getLoginTimeStamp.unsafeRunSync()
-//    }
 
     val replayJson = s"""[
                         |    [
@@ -66,9 +60,7 @@ object Requests {
                         |    ]
                         |]""".stripMargin
 
-//    println("Timestamp in Requests.scala", replayJson)
     val postRequest = POST (UrlForm("data" -> Utils.packJson(replayJson)), uri"https://dbf.channel.or.jp/api/catalog/get_replay")
-//    Utils.unpackResponse(httpClient.expect[Array[Byte]](postRequest))
     val client = EmberClientBuilder.default[IO].build.use { client =>
       client.expect[Array[Byte]](postRequest)
     }
@@ -77,9 +69,7 @@ object Requests {
 
   def getLoginTimeStamp: IO[String] = {
     val jsonList: IO[String] = for {
-//      _ <- IO.pure(println("Getting Login Timestamp..."))
       request <- getJson(loginRequest())
-//      _ = println("Obtained Login Timestamp!")
     } yield request.replace("\"", "")
     jsonList
   }

@@ -6,7 +6,15 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode exposing (Decoder, decodeString, list, string)
 import Json.Decode as Decode exposing (Decoder)
+import Html.Attributes exposing (datetime)
+import Html.Styled.Attributes exposing (css, href, src)
+import Time
 
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+import Bootstrap.Navbar as Navbar
+
+import Html.Attributes exposing (class)
 
 -- MAIN
 
@@ -35,6 +43,8 @@ type alias SearchResult =
     { uniquePlayerID: String
     , name: String
     , latestMatchTime: String
+    , glickoValue: Int
+    , glickoDeviation: Int
     }
 
 init : () -> (Model, Cmd Msg)
@@ -83,16 +93,18 @@ makeSearchRequest query =
     _ = Debug.log "Issuing the following search query: " query
   in
   Http.get
-    { url = "/search?name=" ++ query
+    { url = "/api/search?name=" ++ query
     , expect = Http.expectJson GotResponse searchResultListDecoder
     }
 
 searchResultDecoder : Decoder SearchResult
 searchResultDecoder =
-  Decode.map3 SearchResult
+  Decode.map5 SearchResult
     (Decode.field "uniquePlayerID" Decode.string)
     (Decode.field "name" Decode.string)
     (Decode.field "latestMatchTime" Decode.string)
+    (Decode.field "glickoValue" Decode.int)
+    (Decode.field "glickoDeviation" Decode.int)
 
 searchResultListDecoder : Decoder (List SearchResult)
 searchResultListDecoder =
@@ -110,11 +122,28 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ input [ onInput UpdateQuery ] [ text model.query ]
-    , button [ onClick SendRequest ] [ text "Search" ]
+  Grid.container[] [
+    div [] 
+    [ CDN.stylesheet,
+      div [class "jumbotron jumbotron-fluid text-center"] 
+      [
+        h1 [] [ text "Powerlevel - DBFZ Rating System" ]
+        , h3 [] [ text "Currently in beta" ]
+        , p [] [ text "Game results may be deleted without notice until out of beta" ]
+      ]
+    , div [class "navbar navbar-expand-sm justify-content-center"] 
+    [
+      input [ onInput UpdateQuery ] [ text model.query ]
+      , button [ onClick SendRequest ] [ text "Search" ]
+      
+    ]
+    , div [] 
+      [
+        h5 [class "d-flex justify-content-center"] [ text "Copy your ID and put it at the end of: http://powerlevel.info/api/playerid/" ]
+      ]
     , viewOutcome model.outcome
     ]
+  ]
 
 viewOutcome : SearchOutcome -> Html Msg
 viewOutcome outcome =
@@ -129,15 +158,19 @@ viewOutcome outcome =
       let
         tableHeaders = 
           thead []
-            [ th [] [ text "id" ]
-            , th [] [ text "name" ]
-            , th [] [ text "latest match time" ]
+            [ th [] [ text "ID" ]
+            , th [] [ text "Player name" ]
+            , th [] [ text "Latest match time" ]
+            , th [] [ text "Rating value" ]
             ]
         renderResult: SearchResult -> Html Msg
         renderResult = \result -> tr []
+        
           [ td [] [ text result.uniquePlayerID ]
           , td [] [ text result.name ]
           , td [] [ text result.latestMatchTime ]
+          , td [] [ text ( (String.fromInt result.glickoValue) ++ " ± " ++ (String.fromInt result.glickoDeviation)) ]
           ]
       in
-      table [] (tableHeaders :: (List.map renderResult searchResults))
+      table [class "table table-responsive w-100 d-block d-md-table"] (tableHeaders :: (List.map renderResult searchResults))
+    
