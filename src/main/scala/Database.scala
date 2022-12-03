@@ -24,10 +24,11 @@ case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
 
 case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String, glickoValue: Int, glickoDeviation: Int)
 case class Top100Players(uniquePlayerID: String, name: String, glickoValue: Int, glickoDeviation: Int)
+case class Stats(totalGames: Int, totalPlayers: Int)
 
 case class PlayerGames(matchTime: String,
-                       winnerName: String, winnerCharacters: List[String], glickoValueWinner: Double, glickoValueDeviationWinner: Double,
-                       loserName: String, loserCharacters: List[String], glickoValueLoser: Double, glickoValueDeviationLoser: Double)
+                       winnerName: String, winnerCharacters: String, glickoValueWinner: Int, glickoValueDeviationWinner: Int,
+                       loserName: String, loserCharacters: String, glickoValueLoser: Int, glickoValueDeviationLoser: Int)
 
 object Database {
   given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
@@ -126,13 +127,25 @@ object Database {
     val f1 = fr"select match_time, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser from game_results"
     val f2 = fr"where winner_id = ${user_id} or loser_id = ${user_id}"
     val f3 = fr"order by match_time desc"
-    val getGames = (f1 ++ f2 ++ f3).query[(String, String, List[String], Double, Double, String, List[String], Double, Double)]
+    val getGames = (f1 ++ f2 ++ f3).query[(String, String, String, Int, Int, String, String, Int, Int)]
     getGames.to[List].transact(xa)
   }
 
 
   def getPlayerTotalGames(user_id: Long): IO[List[Int]] = {
     val f1 = fr"select count (*) from game_results where winner_id=$user_id or loser_id=$user_id"
+    val getTotalGames = (f1).query[Int]
+    getTotalGames.to[List].transact(xa)
+  }
+
+  def getAllTotalGames: IO[List[Int]] = {
+    val f1 = fr"select count (*) from game_results"
+    val getTotalGames = (f1).query[Int]
+    getTotalGames.to[List].transact(xa)
+  }
+
+  def getAllTotalPlayers: IO[List[Int]] = {
+    val f1 = fr"select count (*) from players"
     val getTotalGames = (f1).query[Int]
     getTotalGames.to[List].transact(xa)
   }

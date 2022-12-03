@@ -46,9 +46,29 @@ object Main extends IOApp {
     case GET -> Root / "test" =>
       Ok(s"Hello. Time now is ${Utils.timeNow}")
 
+    case request @ GET -> Root / "search" :? name =>
+      StaticFile.fromPath(Path("frontend/search.html"), Some(request))
+        .getOrElseF(NotFound())
+
+    case request@GET -> Root / "player" / name =>
+      StaticFile.fromPath(Path("frontend/player.html"), Some(request))
+        .getOrElseF(NotFound())
+
     case request @ GET -> Root =>
       StaticFile.fromPath(Path("frontend/index.html"), Some(request))
-        .getOrElseF(NotFound()) // In case the file doesn't exist
+        .getOrElseF(NotFound())
+
+    case request@GET -> Root / "stats" =>
+      StaticFile.fromPath(Path("frontend/stats.html"), Some(request))
+        .getOrElseF(NotFound())
+
+    case request@GET -> Root / "faq" =>
+      StaticFile.fromPath(Path("frontend/faq.html"), Some(request))
+        .getOrElseF(NotFound())
+
+    case request@GET -> Root / "vip" =>
+      StaticFile.fromPath(Path("frontend/vip.html"), Some(request))
+        .getOrElseF(NotFound())
 
     case GET -> Root / "api" / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
@@ -77,6 +97,9 @@ object Main extends IOApp {
 
     case GET -> Root / "api" / "playerid" / player_id =>
       Ok(Utils.getPlayerGames(player_id.toLong))
+
+    case GET -> Root / "api" / "getStats" =>
+      Ok(Utils.getStats)
 
     case GET -> Root / "api" / "top100" =>
       Ok(Utils.getTop100RankingsInOrder)

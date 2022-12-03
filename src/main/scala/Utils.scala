@@ -87,10 +87,21 @@ object Utils {
     }
   }
 
+  def getStats = {
+    val stats = for {
+      allGames <- Database.getAllTotalGames
+      allPlayers <- Database.getAllTotalPlayers
+    } yield (allGames ++ allPlayers)
+
+    stats.map { stat =>
+      stat.asJson
+    }
+  }
+
   def getPlayerGames(player_id: Long) = {
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
-        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5, game._6, game._7, game._8, game._9)
+        PlayerGames(epochToTime(game._1), game._2, game._3.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._4, game._5, game._6, game._7.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._8, game._9)
       }
     }
 
