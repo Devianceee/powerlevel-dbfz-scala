@@ -4,13 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways">
+    <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="- Updated website&#10;- Added more API">
+      <change afterPath="$PROJECT_DIR$/frontend/faq.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/player.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/search.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/stats.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/vip.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/PlayerSearch.elm" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/PlayerSearch.elm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/i.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/o.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.1b42b50e6d0a31be70e35827c21a7160c382261f27a1d549957ecfcc6ec1fca0.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.53e3305bd91251075e827affaf8287af793bc77c41bebf66af73564afd87312d.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.c8c9fc98b91f6692c636acd59bbfac6805e4186c6d1cd447c2f018758fe3d666.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/PlayerSearch.elmi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/d.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/i.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/o.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/Main.elm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/PlayerSearch.elm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/Database.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Database.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/Utils.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Utils.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +108,7 @@
     </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="glicko-implementation" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

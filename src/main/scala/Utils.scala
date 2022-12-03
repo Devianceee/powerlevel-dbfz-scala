@@ -25,7 +25,7 @@ object Utils {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
   }
 
-  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot AND after every time we get replays
+  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot
     import cats.effect.unsafe.implicits.global
 
     val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
@@ -79,7 +79,6 @@ object Utils {
         DBPlayer(player._1, player._2, (Utils.epochToTime(player._3) + " UTC"), player._4, player._5)
       }
     }
-
     players.map { listOfPlayers =>
       listOfPlayers.map {player =>
         player.asJson
@@ -88,10 +87,21 @@ object Utils {
     }
   }
 
+  def getStats = {
+    val stats = for {
+      allGames <- Database.getAllTotalGames
+      allPlayers <- Database.getAllTotalPlayers
+    } yield (allGames ++ allPlayers)
+
+    stats.map { stat =>
+      stat.asJson
+    }
+  }
+
   def getPlayerGames(player_id: Long) = {
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
-        PlayerGames(epochToTime(game._1), game._2, game._3, game._4, game._5, game._6, game._7, game._8, game._9)
+        PlayerGames(epochToTime(game._1), game._2, game._3.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._4, game._5, game._6, game._7.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._8, game._9)
       }
     }
 
@@ -100,6 +110,20 @@ object Utils {
         game.asJson
       }
       listOfGames.asJson
+    }
+  }
+
+  def getTop100RankingsInOrder = {
+    val players = Database.getTop100RankingsInOrder.map { players =>
+      players.map { player =>
+        Top100Players(player._1, player._2, player._3, player._4)
+      }
+    }
+    players.map { listOfPlayers =>
+      listOfPlayers.map { player =>
+        player.asJson
+      }
+      listOfPlayers.asJson
     }
   }
 
