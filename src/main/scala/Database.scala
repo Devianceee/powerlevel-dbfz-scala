@@ -23,6 +23,7 @@ case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
 case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String, glickoValue: Int, glickoDeviation: Int)
+case class Top100Players(uniquePlayerID: String, name: String, glickoValue: Int, glickoDeviation: Int)
 
 case class PlayerGames(matchTime: String,
                        winnerName: String, winnerCharacters: List[String], glickoValueWinner: Double, glickoValueDeviationWinner: Double,
@@ -142,17 +143,17 @@ object Database {
     getTotalGames.to[List].transact(xa)
   }
 
-  def getAllRankingsInOrder = {
-    val f1 = fr"select unique_player_id, player_name, glicko_value, glicko_deviation from players"
+  def getAllRankingsInOrder = { // not needed?
+    val f1 = fr"select unique_player_id, player_name, match_time, glicko_value, glicko_deviation from players"
     val f2 = fr"order by glicko_value desc"
-    val getGames = (f1 ++ f2).query[(String, String, String, String)]
+    val getGames = (f1 ++ f2).query[(String, String, Int, Int)]
     getGames.to[List].transact(xa)
   }
 
   def getTop100RankingsInOrder = {
     val f1 = fr"select unique_player_id, player_name, glicko_value, glicko_deviation from players"
     val f2 = fr"order by glicko_value desc limit 100"
-    val getGames = (f1 ++ f2).query[(String, String, String, String)]
+    val getGames = (f1 ++ f2).query[(String, String, Int, Int)]
     getGames.to[List].transact(xa)
   }
 

@@ -76,7 +76,10 @@ object Main extends IOApp {
       Ok(Utils.searchPlayer(s"%$lowercase%"))
 
     case GET -> Root / "api" / "playerid" / player_id =>
-      Ok(Utils.getPlayerGames(player_id.toLong)) // how to parse list -> json in elm?
+      Ok(Utils.getPlayerGames(player_id.toLong))
+
+    case GET -> Root / "api" / "top100" =>
+      Ok(Utils.getTop100RankingsInOrder)
 
     case _ =>
       Ok("Error")

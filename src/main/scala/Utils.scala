@@ -25,7 +25,7 @@ object Utils {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
   }
 
-  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot AND after every time we get replays
+  def bootUpdateEntireGlickoLeaderboard: Leaderboard[Long] = { // do this on boot
     import cats.effect.unsafe.implicits.global
 
     val allPlayers = Database.getAllPlayersLastGlicko.unsafeRunSync()
@@ -79,7 +79,6 @@ object Utils {
         DBPlayer(player._1, player._2, (Utils.epochToTime(player._3) + " UTC"), player._4, player._5)
       }
     }
-
     players.map { listOfPlayers =>
       listOfPlayers.map {player =>
         player.asJson
@@ -100,6 +99,20 @@ object Utils {
         game.asJson
       }
       listOfGames.asJson
+    }
+  }
+
+  def getTop100RankingsInOrder = {
+    val players = Database.getTop100RankingsInOrder.map { players =>
+      players.map { player =>
+        Top100Players(player._1, player._2, player._3, player._4)
+      }
+    }
+    players.map { listOfPlayers =>
+      listOfPlayers.map { player =>
+        player.asJson
+      }
+      listOfPlayers.asJson
     }
   }
 
