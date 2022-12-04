@@ -51,7 +51,7 @@ object Database {
     val loserName = details.loserName
     val loserCharacters = details.loserCharacters
     val checkMatchID = checkIfMatchIdExists(uniqueMatchID).unsafeRunSync()
-    val uniqueMatch: Boolean = if (checkMatchID.length == 0) true else if (checkMatchID.head != uniqueMatchID) true else false
+    val uniqueMatch: Boolean = if (checkMatchID.head == 0) true else false
 
     if ((winnerID != 0 && loserID != 0) && uniqueMatch) {
       val glickoValuesAndDeviation = Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID) // still updating glicko even tho the match might be a duplicate
@@ -78,14 +78,16 @@ object Database {
          sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
             ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
                     do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
-
-      val run = for {
-        run1 <- insertGameQuery
-         run2 <- insertWinnerPlayerQuery
-         run3 <- insertLoserPlayerQuery
-       } yield (run1, run2, run3)
-
-      run.transact(xa)
+      insertGameQuery.transact(xa).unsafeRunSync()
+      insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
+      insertLoserPlayerQuery.transact(xa).unsafeRunSync()
+//      val run = for {
+//        run1 <- insertGameQuery
+//         run2 <- insertWinnerPlayerQuery
+//         run3 <- insertLoserPlayerQuery
+//       } yield (run1, run2, run3)
+//
+//      run.transact(xa)
     }
     else {
       IO.unit
@@ -107,9 +109,9 @@ object Database {
     f1.query[Long].to[List].transact(xa)
   }
 
-  def checkIfMatchIdExists(match_id: Long): IO[List[Long]] = {
-    val f1 = fr"select unique_match_id from game_results where unique_match_id=$match_id order by match_time desc limit 1"
-    f1.query[Long].to[List].transact(xa)
+  def checkIfMatchIdExists(match_id: Long): IO[List[Int]] = {
+    val f1 = fr"select count (unique_match_id) from game_results where unique_match_id=$match_id"
+    f1.query[Int].to[List].transact(xa)
   }
 
 
@@ -170,9 +172,9 @@ object Database {
     getGames.to[List].transact(xa)
   }
 
-  def writeToDB(replayResults:IO[List[ReplayResults]]): IO[List[Any]] = {
-    val results = replayResults.flatMap { result =>
-      result.traverse { details =>
+  def writeToDB(replayResults:IO[List[ReplayResults]]) = {
+    val results = replayResults.map { result =>
+      result.map { details =>
         saveResult(details)
       }
     }

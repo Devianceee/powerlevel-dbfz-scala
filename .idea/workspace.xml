@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -398,7 +396,21 @@
       <option name="project" value="LOCAL" />
       <updated>1670113219984</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="- Updated Index to have clickable name">
+      <created>1670122870573</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1670122870573</updated>
+    </task>
+    <task id="LOCAL-00030" summary="- Potential fix to Top 100 leaderboard not being updated correctly">
+      <created>1670127549884</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1670127549884</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -453,7 +465,9 @@
     <MESSAGE value="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways" />
     <MESSAGE value="- Updated website" />
     <MESSAGE value="- Updated FAQ" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Updated FAQ" />
+    <MESSAGE value="- Updated Index to have clickable name" />
+    <MESSAGE value="- Potential fix to Top 100 leaderboard not being updated correctly" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Potential fix to Top 100 leaderboard not being updated correctly" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
