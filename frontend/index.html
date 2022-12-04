@@ -67,8 +67,7 @@
     for (let x in myObj) {
       text += "<tr></tr>"
       text += "<td>" + counter + "</td>";
-      // text += "<td>" + myObj[x].uniquePlayerID + "</td>";
-      text += "<td>" + myObj[x].name + "</td>";
+      text += "<td> <a href=/player/" + myObj[x].uniquePlayerID + ">" + myObj[x].name + " </a></td>";
       text += "<td>" + myObj[x].glickoValue + " ±" + myObj[x].glickoDeviation +  "</td>";
       counter += 1;
     }

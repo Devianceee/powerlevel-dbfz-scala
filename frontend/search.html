@@ -70,7 +70,6 @@
         text += "<thead style='font-size: x-large;'><tr><th>Username</th><th>Last Match</th><th>Rating</th></tr></thead>"
         for (let x in myObj) {
         text += "<tr></tr>"
-        text += "<td style='display: none'>" + myObj[x].uniquePlayerID + "</td>";
         text += "<td> <a href=/player/" + myObj[x].uniquePlayerID + ">" + myObj[x].name + " </a></td>";
         text += "<td>" + myObj[x].latestMatchTime + "</td>";
         text += "<td>" + myObj[x].glickoValue + " ±" + myObj[x].glickoDeviation +  "</td>";
