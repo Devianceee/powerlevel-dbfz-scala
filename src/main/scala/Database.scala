@@ -56,11 +56,11 @@ object Database {
     if ((winnerID != 0 && loserID != 0) && uniqueMatch) {
       val glickoValuesAndDeviation = Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID) // still updating glicko even tho the match might be a duplicate
 
-      val glicko_value_winner: Double = (glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.lower.value) / 2
-      val glicko_deviation_winner: Double = glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).deviation.value
+      val glicko_value_winner = ((glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.lower.value) / 2).toInt
+      val glicko_deviation_winner = glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).deviation.value.toInt
 
-      val glicko_value_loser: Double = (glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.lower.value) / 2
-      val glicko_deviation_loser: Double = glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).deviation.value
+      val glicko_value_loser = ((glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.lower.value) / 2).toInt
+      val glicko_deviation_loser = glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).deviation.value.toInt
 
       val insertGameQuery = (
         sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
