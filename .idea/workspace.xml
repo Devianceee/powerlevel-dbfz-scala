@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/player.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/player.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vip.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vip.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/faq.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/faq.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -377,7 +376,21 @@
       <option name="project" value="LOCAL" />
       <updated>1670110808807</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="- Updated website">
+      <created>1670111414228</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1670111414228</updated>
+    </task>
+    <task id="LOCAL-00027" summary="- Updated FAQ">
+      <created>1670111711273</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1670111711273</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -431,7 +444,8 @@
     <MESSAGE value="- potential fixes?" />
     <MESSAGE value="- Updated index.html&#10;- Larger range of games pulled&#10;- Changed backend pathways" />
     <MESSAGE value="- Updated website" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Updated website" />
+    <MESSAGE value="- Updated FAQ" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Updated FAQ" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
