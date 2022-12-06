@@ -13,26 +13,26 @@ import org.http4s.ember.server.*
 import fs2.io.file.Path
 import org.http4s.implicits._
 
-import sglicko2.*
-import sglicko2.WinOrDraw.*
-import sglicko2.WinOrDraw.Ops.*
+//import sglicko2.*
+//import sglicko2.WinOrDraw.*
+//import sglicko2.WinOrDraw.Ops.*
 
 import math.Numeric.Implicits.infixNumericOps
 
 
 object Main extends IOApp {
-  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
+//  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
-  def updateEntireGlickoLeaderboardAfterReplays(winnerID: Long, loserID: Long): Leaderboard[Long] = {
-    leaderboard = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
-    return leaderboard
-  }
+//  def updateEntireGlickoLeaderboardAfterReplays(winnerID: Long, loserID: Long): Leaderboard[Long] = {
+//    leaderboard = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
+//    return leaderboard
+//  }
 
   val numberOfMatchesQueried = 50 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
   println("Preparing Glicko leaderboard...")
-  var leaderboard = Utils.bootUpdateEntireGlickoLeaderboard
+//  var leaderboard = Utils.bootUpdateEntireGlickoLeaderboard
   println("Finished preparing Glicko leaderboard!")
 
   object playerName extends QueryParamDecoderMatcher[String]("name")
@@ -112,7 +112,7 @@ object Main extends IOApp {
   val server = EmberServerBuilder
     .default[IO]
     .withHost(ipv4"0.0.0.0")
-    .withPort(port"80")
+    .withPort(port"9000")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)

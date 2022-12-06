@@ -11,13 +11,13 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
-import sglicko2.*
-import sglicko2.WinOrDraw.*
-import sglicko2.WinOrDraw.Ops.*
+//import sglicko2.*
+//import sglicko2.WinOrDraw.*
+//import sglicko2.WinOrDraw.Ops.*
 
 
 object Utils {
-  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
+//  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
   def timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 

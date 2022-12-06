@@ -11,10 +11,10 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
-import sglicko2.*
-import sglicko2.WinOrDraw.*
-import sglicko2.WinOrDraw.Ops.*
-import sglicko2.RatingPeriod
+//import sglicko2.*
+//import sglicko2.WinOrDraw.*
+//import sglicko2.WinOrDraw.Ops.*
+//import sglicko2.RatingPeriod
 import cats.effect.unsafe.implicits.global
 
 
@@ -31,7 +31,7 @@ case class PlayerGames(matchTime: String,
                        loserName: String, loserCharacters: String, glickoValueLoser: Int, glickoValueDeviationLoser: Int)
 
 object Database {
-  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
+//  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",

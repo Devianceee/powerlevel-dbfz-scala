@@ -63,7 +63,7 @@
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onload = function() {
         const myObj = JSON.parse(this.responseText);
-        let text = "<table style='color:white; font-size: 14pt;' class='table table-bordered table-responsive table-hover text-center text-nowrap'>";
+        let text = "<table style='color:white; font-size: 14pt;' class='table table-bordered table-responsive table-hover text-center'>";
         // text += "<thead><tr><th>#</th><th>ID</th><th>Username</th><th>Rating</th></tr></thead>"
         text += "<thead style='font-size: x-large;'><tr> <th>Last Match</th> <th>Winner Name</th> <th>Winner Characters</th> <th>Winner Rating</th> <th>Loser Name</th> <th>Loser Characters</th> <th>Loser Rating</th> </tr></thead>"
         for (let x in myObj) {
