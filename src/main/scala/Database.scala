@@ -18,8 +18,8 @@ case class ReplayResults(uniqueMatchID: Long, matchTime: Long,
                          winnerID: Long, winnerName: String, winnerCharacters: List[String],
                          loserID: Long, loserName: String, loserCharacters: List[String])
 
-case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String, glickoValue: Int, glickoDeviation: Int)
-case class Top100Players(uniquePlayerID: String, name: String, glickoValue: Int, glickoDeviation: Int)
+case class DBPlayer(uniquePlayerID: String, name: String, latestMatchTime: String, glickoValue: Double, glickoDeviation: Double)
+case class Top100Players(uniquePlayerID: String, name: String, glickoValue: Double, glickoDeviation: Double)
 case class Stats(totalGames: Int, totalPlayers: Int)
 
 case class PlayerGames(matchTime: String,
@@ -27,6 +27,8 @@ case class PlayerGames(matchTime: String,
                        loserName: String, loserCharacters: String, glickoValueLoser: Int, glickoValueDeviationLoser: Int)
 
 object Database {
+  val INITIAL_DEVIATION = 700.0
+  val INITIAL_VALUE = 1500.0
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
@@ -47,35 +49,47 @@ object Database {
     val loserCharacters = details.loserCharacters
     val checkMatchID = checkIfMatchIdExists(uniqueMatchID).unsafeRunSync()
     val uniqueMatch: Boolean = if (checkMatchID.head == 0) true else false
+    val winnerRatingDB = getPlayerLastGlicko(winnerID).unsafeRunSync()
+    val loserRatingDB = getPlayerLastGlicko(loserID).unsafeRunSync()
 
     if ((winnerID != 0 && loserID != 0) && uniqueMatch) {
+      val winnerRating: Rating = if(winnerRatingDB.isEmpty) Rating(INITIAL_VALUE, INITIAL_DEVIATION) else Rating(winnerRatingDB.head._1, winnerRatingDB.head._2)
+      val loserRating: Rating = if(loserRatingDB.isEmpty) Rating(INITIAL_VALUE, INITIAL_DEVIATION) else Rating(loserRatingDB.head._1, loserRatingDB.head._2)
 
-//      val insertGameQuery = (
-//        sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
-//           ($uniqueMatchID, $matchTime,
-//           $winnerID, $winnerName, $winnerCharacters, $glicko_value_winner, $glicko_deviation_winner,
-//           $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
-//           on conflict do nothing""".update.run)
-//
-//       val insertWinnerPlayerQuery = (
-//         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
-//            ($winnerID, $winnerName, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
-//            do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
-//
-//       val insertLoserPlayerQuery = (
-//         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
-//            ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
-//                    do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
-//      insertGameQuery.transact(xa).unsafeRunSync()
-//      insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
-//      insertLoserPlayerQuery.transact(xa).unsafeRunSync()
-//      val run = for {
-//        run1 <- insertGameQuery
-//         run2 <- insertWinnerPlayerQuery
-//         run3 <- insertLoserPlayerQuery
-//       } yield (run1, run2, run3)
-//
-//      run.transact(xa)
+      val glicko_value_winner = GlickoRater.calcNewRating(winnerRating, loserRating, 1.0)
+      val glicko_deviation_winner = GlickoRater.calcNewDeviation(winnerRating, loserRating)
+
+      val glicko_value_loser = GlickoRater.calcNewRating(loserRating, winnerRating, 0.0)
+      val glicko_deviation_loser = GlickoRater.calcNewDeviation(loserRating, winnerRating)
+
+
+      val insertGameQuery = (
+        sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
+          ($uniqueMatchID, $matchTime,
+          $winnerID, $winnerName, $winnerCharacters, $glicko_value_winner, $glicko_deviation_winner,
+          $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
+          on conflict do nothing""".update.run)
+
+      val insertWinnerPlayerQuery = (
+        sql"""insert into players (unique_player_id, player_name, last_match_time, glicko_value, glicko_deviation) values
+            ($winnerID, $winnerName, $matchTime, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
+            do update set player_name=excluded.player_name, last_match_time=excluded.last_match_time, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+
+      val insertLoserPlayerQuery = (
+        sql"""insert into players (unique_player_id, player_name, last_match_time, glicko_value, glicko_deviation) values
+            ($loserID, $loserName, $matchTime, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
+                    do update set player_name=excluded.player_name, last_match_time=excluded.last_match_time, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+      
+      insertGameQuery.transact(xa).unsafeRunSync()
+      insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
+      insertLoserPlayerQuery.transact(xa).unsafeRunSync()
+      // val run = for {
+      //   run1 <- insertGameQuery
+      //   run2 <- insertWinnerPlayerQuery
+      //   run3 <- insertLoserPlayerQuery
+      // } yield (run1, run2, run3)
+
+      // run.transact(xa)
       IO.unit
 
     }
@@ -97,6 +111,16 @@ object Database {
   def getAllPlayersIDs: IO[List[Long]] = {
     val f1 = fr"select unique_player_id from players"
     f1.query[Long].to[List].transact(xa)
+  }
+
+  def updatePlayerDeviation(player_id: Long, new_deviation: Double) = {
+    val f1 = sql"update players set glicko_deviation = $new_deviation, last_match_time = ${Utils.epochTimeNow} where unique_player_id = $player_id"
+    f1.update.run.transact(xa).unsafeRunSync()
+  }
+
+  def getPlayerDeviationAndTimestamp = {
+    val f1 = fr"select unique_player_id, glicko_deviation, last_match_time from players"
+    f1.query[(Long, Double, Int)].to[List].transact(xa)
   }
 
   def checkIfMatchIdExists(match_id: Long): IO[List[Int]] = {

@@ -5,8 +5,8 @@ import scala.math._
 case class Rating(value: Double, deviation: Double)
 
 object GlickoRater {
-  val INITIAL_DEVIATION = 700.0
   val RATING_PERIOD = 60 * 60
+  val INITIAL_DEVIATION = 700.0
   val C = 3.1
   val Q = 0.00575646273
 
@@ -34,7 +34,7 @@ object GlickoRater {
     val e = calcE(own_rating, other_rating)
     val d2 = calcD2(own_rating, other_rating)
 
-    (Q / (1.0 / pow(own_rating.deviation, 2.0) + (1.0 / d2))) * g * (outcome - e)
+    own_rating.value + ((Q / (1.0 / pow(own_rating.deviation, 2.0) + (1.0 / d2))) * g * (outcome - e))
   }
 
   def calcNewDeviation(ownRating: Rating, otherRating: Rating) = {
@@ -43,15 +43,15 @@ object GlickoRater {
     max(25.0, sqrt(1.0 / ((1.0 / pow(ownRating.deviation, 2.0)) + (1.0 / d2))))
   }
 
-  def decayDeviation(rating: Rating, previousGameTimestamp: Int) = {
+  def decayDeviation(deviation: Double, previousGameTimestamp: Int) = {
     val decayCount = (Utils.epochTimeNow - previousGameTimestamp) / RATING_PERIOD // get time difference between their last game and now divided by the rating period (set to 1 hour)
-    println(decayCount)
-    var deviation = rating.deviation
+    // println(decayCount)
+    var updatedDeviation = deviation
     for (_ <- 0 to decayCount.toInt) {
-      deviation = sqrt(pow(deviation, 2.0) + pow(C, 2.0))
-      deviation = min(deviation, INITIAL_DEVIATION)
+      updatedDeviation = sqrt(pow(updatedDeviation, 2.0) + pow(C, 2.0))
+      updatedDeviation = min(updatedDeviation, INITIAL_DEVIATION)
     }
-    deviation
+    updatedDeviation
   }
 
   def calcExpectedOutcome(own_rating: Rating, other_rating: Rating) = {

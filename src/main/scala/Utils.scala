@@ -22,7 +22,6 @@ object Utils {
     LocalDateTime.parse(s.toString.replace("\"", ""), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.UTC)
   }
 
-
   def epochToTime(epoch: String): String = {
     LocalDateTime.ofEpochSecond(epoch.toLong, 0, ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
   }
@@ -48,6 +47,21 @@ object Utils {
       listOfPlayers.asJson
     }
   }
+
+  def deviationDecay = {  
+    import cats.effect.unsafe.implicits.global
+    
+    val getUsersInfos = Database.getPlayerDeviationAndTimestamp
+
+    println(getUsersInfos)
+    getUsersInfos.map { userInfo =>
+      userInfo.map {info =>
+      println(info)
+      Database.updatePlayerDeviation(info._1, GlickoRater.decayDeviation(info._2, info._3))
+      }
+    }
+  }
+
 
   def getStats = {
     val stats = for {
@@ -132,11 +146,12 @@ object Utils {
               rawLoserPlayer.head(0).toString.replace("\"", "").toLong, rawLoserPlayer.head(1).toString.replace("\"", ""), parseCharacters(rawLoserCharacters))) // Loser ID, name and characters
         })
     }
-//    Database.writeToDB(matches)
+    Database.writeToDB(matches)
     val reversedMatches = for {
       x <- matches
     } yield x.reverse
     reversedMatches
+    // matches
   }
 
 

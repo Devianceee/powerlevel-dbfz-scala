@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="root [file:/E:/powerlevel-dbfz-scala/]" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+<module external.linked.project.id="root [file:/C:/Users/Shahi/IdeaProjects/powerlevel-dbfz-scala/]" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
     <output url="file://$MODULE_DIR$/../../target/scala-3.2.1/classes" />
     <output-test url="file://$MODULE_DIR$/../../target/scala-3.2.1/test-classes" />
     <exclude-output />
@@ -38,11 +38,6 @@
     <orderEntry type="library" name="sbt: io.circe:circe-numbers_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-parser_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: org.checkerframework:checker-qual:3.5.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:blaze-core_3:0.15.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:blaze-http_3:0.15.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-client_3:0.23.10:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-core_3:0.23.10:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-server_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-circe_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-client_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-core_3:0.23.10:jar" level="project" />

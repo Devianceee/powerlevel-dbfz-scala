@@ -59,6 +59,9 @@ object Main extends IOApp {
       StaticFile.fromPath(Path("frontend/vip.html"), Some(request))
         .getOrElseF(NotFound())
 
+    case GET -> Root / "api" / "deviationDecay" => // cron job via curl / python
+      Ok("a")
+
     case GET -> Root / "api" / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
       println(reqTimestamp)
@@ -108,33 +111,40 @@ object Main extends IOApp {
     .as(ExitCode.Success)
 
   override def run(args: List[String]): IO[ExitCode] = {
-//      server
-    println("Player with 1600 value and 200 deviation WINS VERSUS 1700 value and 300 deviation")
-    println("\nNew values")
-    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1506.0, 131.0), 1.0) + " value increase for player 1 winning") // get new rating value
-    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 0.0) + " value decrease for player 2 losing") // get new rating value
+    server
+//    println("Player with 1600 value and 200 deviation WINS VERSUS 1700 value and 300 deviation")
+//    println("\nNew values")
+//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1506.0, 131.0), 1.0) + " value increase for player 1 winning") // get new rating value
+//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 0.0) + " value decrease for player 2 losing") // get new rating value
+//
+//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 1.0) + " value increase for player 2 winning")
+//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1701.0, 131.0), 0.0) + " value increase for player 1 losing")
+//
+//    // ^ need all 4 as each player has different increases and decreases in value for winning and losing
+//
+//    println("\nNew deviation")
+//    println(GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))) // number should be lower as certainty increases
+//    println(GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0)))
+//
+//    val p1NewDev = GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))
+//    val p2NewDev = GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0))
+//
+//    println("\nDeviation decay")
+//    println(GlickoRater.decayDeviation(p1NewDev, 1669855969)) // get decay'ed deviation after getting the game? or should do every hour and not care (probably the latter)?
+//    println(GlickoRater.decayDeviation(p2NewDev, 1669855969))
+//
+//    println("\nExpected outcomes")
+//    println(GlickoRater.calcExpectedOutcome(Rating(1701.0, 136.0), Rating(1506.0, 131.0)) * 100) // for cool win percentages
+//    println(GlickoRater.calcExpectedOutcome(Rating(1506.0, 131.0), Rating(1701.0, 136.0)) * 100)
+//
+//    println(Utils.epochTimeNow)
 
-    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 1.0) + " value increase for player 2 winning")
-    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1701.0, 131.0), 0.0) + " value increase for player 1 losing")
-
-    // ^ need all 4 as each player has different increases and decreases in value for winning and losing
-
-    println("\nNew deviation")
-    println(GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))) // number should be lower as certainty increases
-    println(GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0)))
-
-    val p1NewDev = GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))
-    val p2NewDev = GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0))
-
-    println("\nDeviation decay")
-    println(GlickoRater.decayDeviation(Rating(1700.0, p1NewDev), 1669855969)) // get decay'ed deviation after getting the game? or should do every hour and not care (probably the latter)?
-    println(GlickoRater.decayDeviation(Rating(1600.0, p2NewDev), 1669855969))
-
-    println("\nExpected outcomes")
-    println(GlickoRater.calcExpectedOutcome(Rating(1701.0, 136.0), Rating(1506.0, 131.0)) * 100) // for cool win percentages
-    println(GlickoRater.calcExpectedOutcome(Rating(1506.0, 131.0), Rating(1701.0, 136.0)) * 100)
-
-    println(Utils.epochTimeNow)
-    IO(ExitCode.Success)
+    // println(Utils.deviationDecay)
+    // Utils.deviationDecay.unsafeRunSync()
+    // println(Database.updatePlayerDeviation(1001, 401.0).unsafeRunSync())
+    // val timestampp = Requests.getLoginTimeStamp.unsafeRunSync()
+    // println(timestampp)
+    // Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestampp, 0, 10, 1))).unsafeRunSync()
+    // IO(ExitCode.Success)
   }
 }
