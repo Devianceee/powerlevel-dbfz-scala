@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="root [file:/E:/powerlevel-dbfz-scala/]" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_13">
-    <output url="file://$MODULE_DIR$/../../target/scala-3.2.0/classes" />
-    <output-test url="file://$MODULE_DIR$/../../target/scala-3.2.0/test-classes" />
+<module external.linked.project.id="root [file:/C:/Users/Shahi/IdeaProjects/powerlevel-dbfz-scala/]" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
+    <output url="file://$MODULE_DIR$/../../target/scala-3.2.1/classes" />
+    <output-test url="file://$MODULE_DIR$/../../target/scala-3.2.1/test-classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../..">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/scala" isTestSource="false" packagePrefix="org.powerlevel" />
@@ -32,18 +32,12 @@
     <orderEntry type="library" name="sbt: com.typesafe.play:play-functional_3:2.10.0-RC7:jar" level="project" />
     <orderEntry type="library" name="sbt: com.typesafe.play:play-json_3:2.10.0-RC7:jar" level="project" />
     <orderEntry type="library" name="sbt: com.zaxxer:HikariCP:4.0.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: eu.flierl:sglicko2_3:3.0.0:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-core_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-generic_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-jawn_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-numbers_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: io.circe:circe-parser_3:0.14.3:jar" level="project" />
     <orderEntry type="library" name="sbt: org.checkerframework:checker-qual:3.5.0:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:blaze-core_3:0.15.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:blaze-http_3:0.15.3:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-client_3:0.23.10:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-core_3:0.23.10:jar" level="project" />
-    <orderEntry type="library" name="sbt: org.http4s:http4s-blaze-server_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-circe_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-client_3:0.23.10:jar" level="project" />
     <orderEntry type="library" name="sbt: org.http4s:http4s-core_3:0.23.10:jar" level="project" />
@@ -87,6 +81,5 @@
     <orderEntry type="library" name="sbt: org.wvlet.airframe:airframe-json_3:22.11.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.wvlet.airframe:airframe-log_3:22.11.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.wvlet.airframe:airframe-msgpack_3:22.11.1:jar" level="project" />
-    <orderEntry type="library" name="scala-sdk-3.2.0" level="application" />
   </component>
 </module>

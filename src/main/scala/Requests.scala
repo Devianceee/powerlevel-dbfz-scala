@@ -9,11 +9,8 @@ import org.http4s.client.dsl.io.*
 import org.http4s.ember.client.*
 import org.http4s.implicits.uri
 import play.api.libs.json.{JsValue, Json}
-import sglicko2.{Glicko2, Scale}
 
 import scala.concurrent.duration.DurationInt
-
-
 
 object Requests {
 

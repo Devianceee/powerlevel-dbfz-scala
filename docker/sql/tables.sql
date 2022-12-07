@@ -33,8 +33,9 @@ CREATE TABLE game_results (
 CREATE TABLE players (
   unique_player_id bigint NOT NULL UNIQUE,
   player_name character varying NOT NULL,
+  last_match_time numeric NOT NULL,
   glicko_value numeric NOT NULL,
-  glicko_deviation numeric NOT NULL, 
+  glicko_deviation numeric NOT NULL,
   PRIMARY KEY (unique_player_id)
 );
 

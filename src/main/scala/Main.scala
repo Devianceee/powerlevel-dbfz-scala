@@ -13,27 +13,16 @@ import org.http4s.ember.server.*
 import fs2.io.file.Path
 import org.http4s.implicits._
 
-import sglicko2.*
-import sglicko2.WinOrDraw.*
-import sglicko2.WinOrDraw.Ops.*
 
 import math.Numeric.Implicits.infixNumericOps
 
 
 object Main extends IOApp {
-  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
-  def updateEntireGlickoLeaderboardAfterReplays(winnerID: Long, loserID: Long): Leaderboard[Long] = {
-    leaderboard = leaderboard.after(RatingPeriod(winnerID winsVs loserID))
-    return leaderboard
-  }
 
   val numberOfMatchesQueried = 50 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
-  println("Preparing Glicko leaderboard...")
-  var leaderboard = Utils.bootUpdateEntireGlickoLeaderboard
-  println("Finished preparing Glicko leaderboard!")
 
   object playerName extends QueryParamDecoderMatcher[String]("name")
 
@@ -69,6 +58,9 @@ object Main extends IOApp {
     case request@GET -> Root / "vip" =>
       StaticFile.fromPath(Path("frontend/vip.html"), Some(request))
         .getOrElseF(NotFound())
+
+    case GET -> Root / "api" / "deviationDecay" => // cron job via curl / python
+      Ok("a")
 
     case GET -> Root / "api" / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
@@ -112,14 +104,47 @@ object Main extends IOApp {
   val server = EmberServerBuilder
     .default[IO]
     .withHost(ipv4"0.0.0.0")
-    .withPort(port"80")
+    .withPort(port"9000")
     .withHttpApp(routes)
     .build
     .use(_ => IO.never)
     .as(ExitCode.Success)
 
   override def run(args: List[String]): IO[ExitCode] = {
-      server
-//    IO(ExitCode.Success)
+    server
+//    println("Player with 1600 value and 200 deviation WINS VERSUS 1700 value and 300 deviation")
+//    println("\nNew values")
+//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1506.0, 131.0), 1.0) + " value increase for player 1 winning") // get new rating value
+//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 0.0) + " value decrease for player 2 losing") // get new rating value
+//
+//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 1.0) + " value increase for player 2 winning")
+//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1701.0, 131.0), 0.0) + " value increase for player 1 losing")
+//
+//    // ^ need all 4 as each player has different increases and decreases in value for winning and losing
+//
+//    println("\nNew deviation")
+//    println(GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))) // number should be lower as certainty increases
+//    println(GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0)))
+//
+//    val p1NewDev = GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))
+//    val p2NewDev = GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0))
+//
+//    println("\nDeviation decay")
+//    println(GlickoRater.decayDeviation(p1NewDev, 1669855969)) // get decay'ed deviation after getting the game? or should do every hour and not care (probably the latter)?
+//    println(GlickoRater.decayDeviation(p2NewDev, 1669855969))
+//
+//    println("\nExpected outcomes")
+//    println(GlickoRater.calcExpectedOutcome(Rating(1701.0, 136.0), Rating(1506.0, 131.0)) * 100) // for cool win percentages
+//    println(GlickoRater.calcExpectedOutcome(Rating(1506.0, 131.0), Rating(1701.0, 136.0)) * 100)
+//
+//    println(Utils.epochTimeNow)
+
+    // println(Utils.deviationDecay)
+    // Utils.deviationDecay.unsafeRunSync()
+    // println(Database.updatePlayerDeviation(1001, 401.0).unsafeRunSync())
+    // val timestampp = Requests.getLoginTimeStamp.unsafeRunSync()
+    // println(timestampp)
+    // Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestampp, 0, 10, 1))).unsafeRunSync()
+    // IO(ExitCode.Success)
   }
 }
