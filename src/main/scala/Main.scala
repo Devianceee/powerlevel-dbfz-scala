@@ -60,7 +60,8 @@ object Main extends IOApp {
         .getOrElseF(NotFound())
 
     case GET -> Root / "api" / "deviationDecay" => // cron job via curl / python
-      Ok("a")
+      Utils.deviationDecay.unsafeRunSync()
+      Ok(s"Request sent at: ${Utils.timeNow}")
 
     case GET -> Root / "api" / "getReplays" => // cron job via curl / python
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()

@@ -5,32 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fda124a-1efb-49c9-a191-6f1953241860" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala-build.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/powerlevel-dbfz-scala.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/sql/tables.sql" beforeDir="false" afterPath="$PROJECT_DIR$/docker/sql/tables.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/d.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/i.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/0.19.1/o.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.1b42b50e6d0a31be70e35827c21a7160c382261f27a1d549957ecfcc6ec1fca0.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.53e3305bd91251075e827affaf8287af793bc77c41bebf66af73564afd87312d.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/dependencies.c8c9fc98b91f6692c636acd59bbfac6805e4186c6d1cd447c2f018758fe3d666.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/PlayerSearch.elmi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/PlayerSearch.elmo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/d.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/i.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm-stuff/0.19.1/o.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/elm-stuff/generated-code/elm-community/elm-test/0.19.1-revision10/elm.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Database.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Database.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/GlickoRater.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/GlickoRater.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Main.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Utils.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/Utils.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +68,7 @@
     </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="modified-glicko-update" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -177,6 +153,8 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Scala REPL.Scala REPL" />
+        <item itemvalue="Application.Main" />
         <item itemvalue="Application.Main" />
         <item itemvalue="Scala REPL.Scala REPL" />
         <item itemvalue="Application.Main" />
@@ -443,7 +421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670248208879</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="- Updated glicko system and added decay">
+      <created>1670429315133</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1670429315133</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -475,7 +460,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Updated gitignore" />
     <MESSAGE value="Chnaged MessagePack library to be able to serialise and deserialise JSON and cleaned up code" />
     <MESSAGE value="- Modularised code&#10;- Updated CRON jobs to run replay every 30 seconds and get login timestamp every 30 minutes&#10;- Updated code so replay and login APIs can be used" />
     <MESSAGE value="- Fixed replay calls&#10;- Updated CRON jobs" />
@@ -500,7 +484,8 @@
     <MESSAGE value="- Updated Index to have clickable name" />
     <MESSAGE value="- Potential fix to Top 100 leaderboard not being updated correctly" />
     <MESSAGE value="- Updated index.html" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Updated index.html" />
+    <MESSAGE value="- Updated glicko system and added decay" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Updated glicko system and added decay" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

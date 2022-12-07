@@ -53,10 +53,8 @@ object Utils {
     
     val getUsersInfos = Database.getPlayerDeviationAndTimestamp
 
-    println(getUsersInfos)
     getUsersInfos.map { userInfo =>
       userInfo.map {info =>
-      println(info)
       Database.updatePlayerDeviation(info._1, GlickoRater.decayDeviation(info._2, info._3))
       }
     }
