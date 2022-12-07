@@ -1,6 +1,6 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "3.2.0"
+ThisBuild / scalaVersion := "3.2.1"
 val http4sVersion = "0.23.10"
 val DoobieVersion = "1.0.0-RC1"
 val NewTypeVersion = "0.4.4"
@@ -24,7 +24,6 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "doobie-core" % DoobieVersion,
   "org.tpolecat" %% "doobie-postgres" % DoobieVersion,
   "org.tpolecat" %% "doobie-hikari" % DoobieVersion,
-  "eu.flierl" %% "sglicko2" % "3.0.0",
   "org.typelevel" %% "cats-effect-cps" % "0.4.0",
 )
 

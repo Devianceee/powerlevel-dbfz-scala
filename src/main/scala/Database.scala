@@ -11,10 +11,6 @@ import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
 
-//import sglicko2.*
-//import sglicko2.WinOrDraw.*
-//import sglicko2.WinOrDraw.Ops.*
-//import sglicko2.RatingPeriod
 import cats.effect.unsafe.implicits.global
 
 
@@ -31,7 +27,6 @@ case class PlayerGames(matchTime: String,
                        loserName: String, loserCharacters: String, glickoValueLoser: Int, glickoValueDeviationLoser: Int)
 
 object Database {
-//  given Glicko2 = Glicko2(tau = Tau[0.3d], defaultVolatility = Volatility(0.03d), scale = Scale.Glicko)
 
   val xa: Transactor[IO] = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
@@ -54,33 +49,26 @@ object Database {
     val uniqueMatch: Boolean = if (checkMatchID.head == 0) true else false
 
     if ((winnerID != 0 && loserID != 0) && uniqueMatch) {
-      val glickoValuesAndDeviation = Main.updateEntireGlickoLeaderboardAfterReplays(winnerID, loserID) // still updating glicko even tho the match might be a duplicate
 
-      val glicko_value_winner = ((glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).confidence95.lower.value) / 2).toInt
-      val glicko_deviation_winner = glickoValuesAndDeviation.playersByIdInNoParticularOrder(winnerID).deviation.value.toInt
-
-      val glicko_value_loser = ((glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.upper.value + glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).confidence95.lower.value) / 2).toInt
-      val glicko_deviation_loser = glickoValuesAndDeviation.playersByIdInNoParticularOrder(loserID).deviation.value.toInt
-
-      val insertGameQuery = (
-        sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
-           ($uniqueMatchID, $matchTime,
-           $winnerID, $winnerName, $winnerCharacters, $glicko_value_winner, $glicko_deviation_winner,
-           $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
-           on conflict do nothing""".update.run)
-
-       val insertWinnerPlayerQuery = (
-         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
-            ($winnerID, $winnerName, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
-            do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
-
-       val insertLoserPlayerQuery = (
-         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
-            ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
-                    do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
-      insertGameQuery.transact(xa).unsafeRunSync()
-      insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
-      insertLoserPlayerQuery.transact(xa).unsafeRunSync()
+//      val insertGameQuery = (
+//        sql"""insert into game_results (unique_match_id, match_time, winner_id, winner_name, winner_characters, glicko_value_winner, glicko_deviation_winner, loser_id, loser_name, loser_characters, glicko_value_loser, glicko_deviation_loser) values
+//           ($uniqueMatchID, $matchTime,
+//           $winnerID, $winnerName, $winnerCharacters, $glicko_value_winner, $glicko_deviation_winner,
+//           $loserID, $loserName, $loserCharacters,  $glicko_value_loser, $glicko_deviation_loser)
+//           on conflict do nothing""".update.run)
+//
+//       val insertWinnerPlayerQuery = (
+//         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
+//            ($winnerID, $winnerName, $glicko_value_winner, $glicko_deviation_winner) on conflict (unique_player_id)
+//            do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+//
+//       val insertLoserPlayerQuery = (
+//         sql"""insert into players (unique_player_id, player_name, glicko_value, glicko_deviation) values
+//            ($loserID, $loserName, $glicko_value_loser, $glicko_deviation_loser) on conflict (unique_player_id)
+//                    do update set player_name=excluded.player_name, glicko_value=excluded.glicko_value, glicko_deviation=excluded.glicko_deviation""".update.run)
+//      insertGameQuery.transact(xa).unsafeRunSync()
+//      insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
+//      insertLoserPlayerQuery.transact(xa).unsafeRunSync()
 //      val run = for {
 //        run1 <- insertGameQuery
 //         run2 <- insertWinnerPlayerQuery
@@ -88,6 +76,8 @@ object Database {
 //       } yield (run1, run2, run3)
 //
 //      run.transact(xa)
+      IO.unit
+
     }
     else {
       IO.unit
