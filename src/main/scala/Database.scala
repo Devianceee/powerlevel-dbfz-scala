@@ -83,15 +83,7 @@ object Database {
       insertGameQuery.transact(xa).unsafeRunSync()
       insertWinnerPlayerQuery.transact(xa).unsafeRunSync()
       insertLoserPlayerQuery.transact(xa).unsafeRunSync()
-      // val run = for {
-      //   run1 <- insertGameQuery
-      //   run2 <- insertWinnerPlayerQuery
-      //   run3 <- insertLoserPlayerQuery
-      // } yield (run1, run2, run3)
-
-      // run.transact(xa)
       IO.unit
-
     }
     else {
       IO.unit

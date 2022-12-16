@@ -54,7 +54,7 @@ object GlickoRater {
     updatedDeviation
   }
 
-  def calcExpectedOutcome(own_rating: Rating, other_rating: Rating) = {
+  def calcExpectedOutcome(own_rating: Rating, other_rating: Rating) = { // to use
     val rating_difference = own_rating.value - other_rating.value;
 
     val g = calcG(sqrt(

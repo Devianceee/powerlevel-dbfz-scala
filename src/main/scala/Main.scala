@@ -19,7 +19,6 @@ import math.Numeric.Implicits.infixNumericOps
 
 object Main extends IOApp {
 
-
   val numberOfMatchesQueried = 50 // better to do this via .conf file or some other environment way
 
   println("Starting PowerLevel.info \nBy Deviance#3806\n\n")
@@ -59,11 +58,11 @@ object Main extends IOApp {
       StaticFile.fromPath(Path("frontend/vip.html"), Some(request))
         .getOrElseF(NotFound())
 
-    case GET -> Root / "api" / "deviationDecay" => // cron job via curl / python
+    case GET -> Root / "api" / "deviationDecay" =>
       Utils.deviationDecay.unsafeRunSync()
       Ok(s"Request sent at: ${Utils.timeNow}")
 
-    case GET -> Root / "api" / "getReplays" => // cron job via curl / python
+    case GET -> Root / "api" / "getReplays" =>
       val reqTimestamp: String = Requests.getLoginTimeStamp.unsafeRunSync()
       println(reqTimestamp)
       replays(reqTimestamp, 1).unsafeRunSync()
@@ -77,11 +76,6 @@ object Main extends IOApp {
       replays(reqTimestamp, 8001).unsafeRunSync()
       replays(reqTimestamp, 9001).unsafeRunSync()
       replays(reqTimestamp, 10001).unsafeRunSync()
-
-//      val foo = (replays(reqTimestamp, 11), replays(reqTimestamp, 501), replays(reqTimestamp, 1001), replays(reqTimestamp, 1501), replays(reqTimestamp, 2001), replays(reqTimestamp, 2501),
-//        replays(reqTimestamp, 3001), replays(reqTimestamp, 3501), replays(reqTimestamp, 4001), replays(reqTimestamp, 4501), replays(reqTimestamp, 5001)).parMapN { (_, _, _, _, _, _, _, _, _, _, _) => () }
-//      foo.unsafeRunSync()
-
       Ok(s"Request sent at: ${Utils.timeNow}")
 
     case GET -> Root / "api" / "search" :? playerName(name) =>
@@ -113,39 +107,5 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
     server
-//    println("Player with 1600 value and 200 deviation WINS VERSUS 1700 value and 300 deviation")
-//    println("\nNew values")
-//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1506.0, 131.0), 1.0) + " value increase for player 1 winning") // get new rating value
-//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 0.0) + " value decrease for player 2 losing") // get new rating value
-//
-//    println(GlickoRater.calcNewRating(Rating(1506.0, 131.0), Rating(1701.0, 136.0), 1.0) + " value increase for player 2 winning")
-//    println(GlickoRater.calcNewRating(Rating(1701.0, 136.0), Rating(1701.0, 131.0), 0.0) + " value increase for player 1 losing")
-//
-//    // ^ need all 4 as each player has different increases and decreases in value for winning and losing
-//
-//    println("\nNew deviation")
-//    println(GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))) // number should be lower as certainty increases
-//    println(GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0)))
-//
-//    val p1NewDev = GlickoRater.calcNewDeviation(Rating(1701.0, 136.0), Rating(1506.0, 131.0))
-//    val p2NewDev = GlickoRater.calcNewDeviation(Rating(1506.0, 131.0), Rating(1701.0, 136.0))
-//
-//    println("\nDeviation decay")
-//    println(GlickoRater.decayDeviation(p1NewDev, 1669855969)) // get decay'ed deviation after getting the game? or should do every hour and not care (probably the latter)?
-//    println(GlickoRater.decayDeviation(p2NewDev, 1669855969))
-//
-//    println("\nExpected outcomes")
-//    println(GlickoRater.calcExpectedOutcome(Rating(1701.0, 136.0), Rating(1506.0, 131.0)) * 100) // for cool win percentages
-//    println(GlickoRater.calcExpectedOutcome(Rating(1506.0, 131.0), Rating(1701.0, 136.0)) * 100)
-//
-//    println(Utils.epochTimeNow)
-
-    // println(Utils.deviationDecay)
-    // Utils.deviationDecay.unsafeRunSync()
-    // println(Database.updatePlayerDeviation(1001, 401.0).unsafeRunSync())
-    // val timestampp = Requests.getLoginTimeStamp.unsafeRunSync()
-    // println(timestampp)
-    // Database.writeToDB(Utils.parseReplays(Requests.replayRequest(timestampp, 0, 10, 1))).unsafeRunSync()
-    // IO(ExitCode.Success)
   }
 }

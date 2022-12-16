@@ -76,6 +76,7 @@ object Utils {
     val games = Database.getPlayerGames(player_id).map { games =>
       games.map { game =>
         PlayerGames(epochToTime(game._1), game._2, game._3.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._4, game._5, game._6, game._7.replace("{", "").replace("}", "").replace(",", ", ").replace("_", " "), game._8, game._9)
+        // really ugly im sorry
       }
     }
 
@@ -131,10 +132,6 @@ object Utils {
 //      _ = println(parse) // print for debug
     } yield Json.parse(parse).as[List[List[JsValue]]].tail.head(2)
 
-    /*
-    TODO: Error checking in case of malformed response,
-     Try with Case Success or Failure with Failure returning Failure and being handled by Database.writeToDB()
-    */
     val matches: IO[List[ReplayResults]] = jsonList.map{ jsList =>
       jsList.as[List[JsValue]].map(wholeMatch => // each whole match
         wholeMatch.as[List[JsValue]] match {
@@ -149,7 +146,7 @@ object Utils {
       x <- matches
     } yield x.reverse
     reversedMatches
-    // matches
+    // so that it does rating updates in the correct order
   }
 
 
