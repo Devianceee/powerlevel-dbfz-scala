@@ -1,0 +1,50 @@
+#page_wrapper {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: rgb(29, 29, 29);
+  color: white;
+}
+
+#top100-table {
+  color: white;
+}
+
+#nav-links {
+  font-size: large;
+  padding-right: 10pt;
+}
+
+#nav-icon {
+  font-weight: bold;
+  font-size: x-large;
+  padding-right: 10pt;
+}
+
+.navbar-custom,
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #f0833a;
+}
+
+.navbar-nav .nav-item:hover .nav-link {
+  color: black;
+}
+
+#vip-page .btn:hover,
+#stats-page .btn:hover,
+#faq-page .btn:hover {
+  background-color: gray;
+}
+
+.btn:hover {
+  background-color: black;
+}
+
+#faq {
+  font-size: x-large;
+}

@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles/common.css">
   </head>
 
 
@@ -48,8 +49,6 @@
 
   <div class="container table-responsive">
     <h1 class="d-flex justify-content-center m-5">Top 100</h1>
-    <!-- <p class="d-flex justify-content-center font-weight-light">Ratings and leaderboard are currently bugged. </p> -->
-    <!-- <p class="d-flex justify-content-center font-weight-light"> Check&nbsp<a href="https://twitter.com/Deviance___/status/1599717672241221634"> here </a>&nbspfor details</p> -->
     <p id="top100-table"></p>
   </div>
 
@@ -63,7 +62,6 @@
   xmlhttp.onload = function() {
     const myObj = JSON.parse(this.responseText);
     let text = "<table style='color:white; font-size: 14pt;' class='table table-hover text-center mx-auto w-50'>";
-    // text += "<thead><tr><th>#</th><th>ID</th><th>Username</th><th>Rating</th></tr></thead>"
     text += "<thead style='font-size: x-large;'><tr><th>#</th><th>Username</th><th>Rating</th></tr></thead>"
     let counter = 1;
     for (let x in myObj) {
@@ -80,50 +78,4 @@
   xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xmlhttp.send("x=" + dbParam);
   </script>
-
-<style>
-  #page_wrapper {
-    width: 100%;
-    max-width: 1024px;
-    margin: 0 auto;
-  }
-
-  body {
-    margin-bottom: 60px;
-    background-color: rgb(29, 29, 29);
-    color: white;
-    /* background-color: #f0833a; */
-  }
-
-  #top100-table {
-    color: white;
-  }
-
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-  background-color: #f0833a;
-}
-
-  #nav-links {
-    font-size: large;
-    padding-right: 10pt;
-  }
-
-  #nav-icon {
-    font-weight: bold;
-    font-size: x-large;
-    padding-right: 10pt;
-  }
-
-.btn:hover {
-  background-color: black;
-}
-
-.navbar-custom {
-  background-color: #f0833a;
-}
-
-.navbar-nav .nav-item:hover .nav-link {
-    color: black;
-}
-
-  </style>
+  
