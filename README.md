@@ -1,5 +1,5 @@
 # Powerlevel - A Rating System for DBFZ
-Ratings in Dragonball Fighterz
+Ratings in Dragonball Fighterz - https://powerlevel.info/
 
 # How does this work?
 Replays are pulled from Strive's servers using the API described in [dbfz-api-py](https://github.com/Devianceee/dbfz-api-py). 
