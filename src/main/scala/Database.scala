@@ -174,7 +174,7 @@ object Database {
   def getTop100RankingsInOrder = {
     val f1 = fr"select unique_player_id, player_name, glicko_value, glicko_deviation from players"
     val f2 = fr"where glicko_deviation <= 150"
-    val f4 = fr"order by glicko_value desc limit 100"
+    val f3 = fr"order by glicko_value desc limit 100"
     val getGames = (f1 ++ f2 ++ f3).query[(String, String, Int, Int)]
     getGames.to[List].transact(xa)
   }
